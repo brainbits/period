@@ -4,17 +4,15 @@ declare(strict_types = 1);
 
 namespace Brainbits\Period;
 
-use Brainbits\Period\Exception\PeriodException;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Throwable;
 
 /**
  * Month period
  */
-final class MonthPeriod implements PeriodInterface
+final class RunningMonthPeriod implements PeriodInterface
 {
     private $period;
 
@@ -22,38 +20,11 @@ final class MonthPeriod implements PeriodInterface
 
     private $endDate;
 
-    public function __construct(DateTimeImmutable $date)
+    public function __construct()
     {
-        $this->period = $date->format('Y-m');
-        $this->startDate = new DateTimeImmutable("first day of {$this->period}");
-        $this->endDate = new DateTimeImmutable("first day of {$this->period} +1 month");
-    }
-
-    public static function createFromPeriodString(string $period): self
-    {
-        if (!preg_match('/^\d\d\d\d-\d\d$/', $period, $match)) {
-            throw new PeriodException("$period is not a valid month period string (e.g. 2017-12).");
-        }
-
-        list($year, $month) = explode('-', $period);
-
-        return new self(new DateTimeImmutable("$year-$month-01"));
-    }
-
-    public static function createFromDateString(string $date): self
-    {
-        try {
-            $period = new self(new DateTimeImmutable($date));
-        } catch (Throwable $e) {
-            throw new PeriodException("$date is not a valid date.");
-        }
-
-        return $period;
-    }
-
-    public static function createCurrent(): self
-    {
-        return new self(new DateTimeImmutable());
+        $this->startDate = new DateTimeImmutable('first day of this month');
+        $this->endDate = new DateTimeImmutable('tomorrow midnight');
+        $this->period = $this->startDate->format('Y-m');
     }
 
     public function getStartDate(): DateTimeImmutable
@@ -83,17 +54,17 @@ final class MonthPeriod implements PeriodInterface
 
     public function next(): PeriodInterface
     {
-        return new self($this->getStartDate()->modify('+1 month'));
+        return new MonthPeriod($this->getStartDate()->modify('+1 month'));
     }
 
     public function prev(): PeriodInterface
     {
-        return new self($this->getStartDate()->modify('-1 month'));
+        return new MonthPeriod($this->getStartDate()->modify('-1 month'));
     }
 
     public function now(): PeriodInterface
     {
-        return self::createCurrent();
+        return new self();
     }
 
     public function getDateInterval(): DateInterval

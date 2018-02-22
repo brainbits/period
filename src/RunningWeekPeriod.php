@@ -4,56 +4,39 @@ declare(strict_types = 1);
 
 namespace Brainbits\Period;
 
-use Brainbits\Period\Exception\PeriodException;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
-use Throwable;
 
 /**
- * Month period
+ * Running week period
  */
-final class MonthPeriod implements PeriodInterface
+final class RunningWeekPeriod implements PeriodInterface
 {
+    /**
+     * @var string
+     */
     private $period;
 
+    /**
+     * @var DateTimeImmutable
+     */
     private $startDate;
 
+    /**
+     * @var DateTimeImmutable
+     */
     private $endDate;
 
-    public function __construct(DateTimeImmutable $date)
+    public function __construct()
     {
-        $this->period = $date->format('Y-m');
-        $this->startDate = new DateTimeImmutable("first day of {$this->period}");
-        $this->endDate = new DateTimeImmutable("first day of {$this->period} +1 month");
-    }
+        $date = new DateTimeImmutable();
+        $day = $date->format('N') - 1;
 
-    public static function createFromPeriodString(string $period): self
-    {
-        if (!preg_match('/^\d\d\d\d-\d\d$/', $period, $match)) {
-            throw new PeriodException("$period is not a valid month period string (e.g. 2017-12).");
-        }
-
-        list($year, $month) = explode('-', $period);
-
-        return new self(new DateTimeImmutable("$year-$month-01"));
-    }
-
-    public static function createFromDateString(string $date): self
-    {
-        try {
-            $period = new self(new DateTimeImmutable($date));
-        } catch (Throwable $e) {
-            throw new PeriodException("$date is not a valid date.");
-        }
-
-        return $period;
-    }
-
-    public static function createCurrent(): self
-    {
-        return new self(new DateTimeImmutable());
+        $this->period = $date->format('o-W');
+        $this->startDate = $date->modify("-$day day midnight");
+        $this->endDate = new DateTimeImmutable('tomorrow midnight');
     }
 
     public function getStartDate(): DateTimeImmutable
@@ -83,17 +66,17 @@ final class MonthPeriod implements PeriodInterface
 
     public function next(): PeriodInterface
     {
-        return new self($this->getStartDate()->modify('+1 month'));
+        return new WeekPeriod($this->getStartDate()->modify('+1 week'));
     }
 
     public function prev(): PeriodInterface
     {
-        return new self($this->getStartDate()->modify('-1 month'));
+        return new WeekPeriod($this->getStartDate()->modify('-1 week'));
     }
 
     public function now(): PeriodInterface
     {
-        return self::createCurrent();
+        return new RunningWeekPeriod();
     }
 
     public function getDateInterval(): DateInterval
@@ -111,17 +94,17 @@ final class MonthPeriod implements PeriodInterface
         $current = $this->now();
 
         if ($current->contains($this->getStartDate())) {
-            return 'period.month.this';
+            return 'period.week.this';
         }
 
         if ($current->next()->contains($this->getStartDate())) {
-            return 'period.month.next';
+            return 'period.week.next';
         }
 
         if ($current->prev()->contains($this->getStartDate())) {
-            return 'period.month.prev';
+            return 'period.week.prev';
         }
 
-        return 'period.month.period';
+        return 'period.week.period';
     }
 }

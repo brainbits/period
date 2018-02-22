@@ -14,7 +14,7 @@ use Throwable;
 /**
  * Day period.
  */
-class DayPeriod implements PeriodInterface
+final class DayPeriod implements PeriodInterface
 {
     private $period;
 

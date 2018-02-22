@@ -14,7 +14,7 @@ use Throwable;
 /**
  * Week period
  */
-class WeekPeriod implements PeriodInterface
+final class WeekPeriod implements PeriodInterface
 {
     /**
      * @var string

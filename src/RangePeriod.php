@@ -12,7 +12,7 @@ use DateTimeInterface;
 /**
  * Range period
  */
-class RangePeriod implements PeriodInterface
+final class RangePeriod implements PeriodInterface
 {
     /**
      * @var string

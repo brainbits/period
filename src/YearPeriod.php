@@ -14,7 +14,7 @@ use Throwable;
 /**
  * Year period
  */
-class YearPeriod implements PeriodInterface
+final class YearPeriod implements PeriodInterface
 {
     private $period;
 
