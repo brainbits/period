@@ -27,6 +27,11 @@ final class RunningYearPeriod implements PeriodInterface
         $this->period = $this->startDate->format('Y');
     }
 
+    public static function createCurrent(): self
+    {
+        return new self();
+    }
+
     public function getStartDate(): DateTimeImmutable
     {
         return $this->startDate;
@@ -64,12 +69,12 @@ final class RunningYearPeriod implements PeriodInterface
 
     public function now(): PeriodInterface
     {
-        return new RunningYearPeriod();
+        return new self();
     }
 
     public function getDateInterval(): DateInterval
     {
-        return $this->startDate->diff($this->endDate);
+        return new DateInterval('P1Y');
     }
 
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
@@ -79,20 +84,6 @@ final class RunningYearPeriod implements PeriodInterface
 
     public function getTranslationKey(): string
     {
-        $current = $this->now();
-
-        if ($current->contains($this->getStartDate())) {
-            return 'period.year.this';
-        }
-
-        if ($current->next()->contains($this->getStartDate())) {
-            return 'period.year.next';
-        }
-
-        if ($current->prev()->contains($this->getStartDate())) {
-            return 'period.year.prev';
-        }
-
-        return 'period.year.period';
+        return 'period.year.this';
     }
 }

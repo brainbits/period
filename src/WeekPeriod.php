@@ -109,7 +109,7 @@ final class WeekPeriod implements PeriodInterface
 
     public function getDateInterval(): DateInterval
     {
-        return $this->startDate->diff($this->endDate);
+        return new DateInterval('P1W');
     }
 
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod

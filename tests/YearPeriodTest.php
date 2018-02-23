@@ -14,7 +14,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Brainbits\Period\YearPeriod
  */
-class YearPeriodSpec extends TestCase
+class YearPeriodTest extends TestCase
 {
     public function testItIsInitializable(): void
     {
@@ -140,7 +140,7 @@ class YearPeriodSpec extends TestCase
         $date = new DateTimeImmutable('2015-01-07');
         $period = new YearPeriod($date);
         $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals((new DateInterval('P1Y'))->format('%y%m%d%h%i%s'), $period->getDateInterval()->format('%y%m%d%h%i%s'));
+        $this->assertEquals((new DateInterval('P1Y'))->format('y%y_m%m_d%d_h%h_i%i_s%s'), $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'));
     }
 
     public function testItHasPeriodDayTranslationKey(): void

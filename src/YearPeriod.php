@@ -101,7 +101,7 @@ final class YearPeriod implements PeriodInterface
 
     public function getDateInterval(): DateInterval
     {
-        return $this->startDate->diff($this->endDate);
+        return new DateInterval('P1Y');
     }
 
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod

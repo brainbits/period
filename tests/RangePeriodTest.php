@@ -123,7 +123,7 @@ class RangePeriodTest extends TestCase
         $date2 = new DateTimeImmutable('2015-01-11');
         $period = new RangePeriod($date1, $date2);
         $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals((new DateInterval('P10D'))->format('%y%m%d%h%i%s'), $period->getDateInterval()->format('%y%m%d%h%i%s'));
+        $this->assertEquals((new DateInterval('P10D'))->format('y%y_m%m_d%d_h%h_i%i_s%s'), $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'));
     }
 
     public function testItHasPeriodRangeTranslationKey(): void

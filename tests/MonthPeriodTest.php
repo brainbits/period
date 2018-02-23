@@ -120,22 +120,22 @@ class MonthPeriodTest extends TestCase
 
     public function testItHasDatePeriod(): void
     {
-        $date = new DateTimeImmutable('2015-01-07');
+        $date = new DateTimeImmutable('2015-02-07');
         $period = new MonthPeriod($date);
         $this->assertInstanceOf(DatePeriod::class, $period->getDatePeriod(new DateInterval('P1D')));
         $i = 0;
         foreach ($period->getDatePeriod(new DateInterval('P1D')) as $x) {
             ++$i;
         }
-        $this->assertSame(31, $i);
+        $this->assertSame(28, $i);
     }
 
     public function testItHasDateInterval(): void
     {
-        $date = new DateTimeImmutable('2015-01-07');
+        $date = new DateTimeImmutable();
         $period = new MonthPeriod($date);
         $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals((new DateInterval('P1M'))->format('%y%m%d%h%i%s'), $period->getDateInterval()->format('%y%m%d%h%i%s'));
+        $this->assertEquals((new DateInterval('P1M'))->format('y%y_m%m_d%d_h%h_i%i_s%s'), $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'));
     }
 
     public function testItHasPeriodDayTranslationKey(): void

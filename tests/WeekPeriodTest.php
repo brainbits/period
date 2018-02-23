@@ -133,7 +133,7 @@ class WeekPeriodTest extends TestCase
         $date = new DateTimeImmutable('2015-01-07');
         $period = new WeekPeriod($date);
         $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals((new DateInterval('P1W'))->format('%y%m%d%h%i%s'), $period->getDateInterval()->format('%y%m%d%h%i%s'));
+        $this->assertEquals((new DateInterval('P1W'))->format('y%y_m%m_d%d_h%h_i%i_s%s'), $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'));
     }
 
     public function testItHasPeriodDayTranslationKey(): void

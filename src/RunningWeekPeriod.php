@@ -39,6 +39,11 @@ final class RunningWeekPeriod implements PeriodInterface
         $this->endDate = new DateTimeImmutable('tomorrow midnight');
     }
 
+    public static function createCurrent(): self
+    {
+        return new self();
+    }
+
     public function getStartDate(): DateTimeImmutable
     {
         return $this->startDate;
@@ -76,12 +81,12 @@ final class RunningWeekPeriod implements PeriodInterface
 
     public function now(): PeriodInterface
     {
-        return new RunningWeekPeriod();
+        return new self();
     }
 
     public function getDateInterval(): DateInterval
     {
-        return $this->startDate->diff($this->endDate);
+        return new DateInterval('P1W');
     }
 
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
@@ -91,20 +96,6 @@ final class RunningWeekPeriod implements PeriodInterface
 
     public function getTranslationKey(): string
     {
-        $current = $this->now();
-
-        if ($current->contains($this->getStartDate())) {
-            return 'period.week.this';
-        }
-
-        if ($current->next()->contains($this->getStartDate())) {
-            return 'period.week.next';
-        }
-
-        if ($current->prev()->contains($this->getStartDate())) {
-            return 'period.week.prev';
-        }
-
-        return 'period.week.period';
+        return 'period.week.this';
     }
 }

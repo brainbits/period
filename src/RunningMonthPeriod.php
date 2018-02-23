@@ -22,9 +22,14 @@ final class RunningMonthPeriod implements PeriodInterface
 
     public function __construct()
     {
-        $this->startDate = new DateTimeImmutable('first day of this month');
+        $this->startDate = new DateTimeImmutable('first day of this month midnight');
         $this->endDate = new DateTimeImmutable('tomorrow midnight');
         $this->period = $this->startDate->format('Y-m');
+    }
+
+    public static function createCurrent(): self
+    {
+        return new self();
     }
 
     public function getStartDate(): DateTimeImmutable
@@ -69,7 +74,7 @@ final class RunningMonthPeriod implements PeriodInterface
 
     public function getDateInterval(): DateInterval
     {
-        return $this->startDate->diff($this->endDate);
+        return new DateInterval('P1M');
     }
 
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
@@ -79,20 +84,6 @@ final class RunningMonthPeriod implements PeriodInterface
 
     public function getTranslationKey(): string
     {
-        $current = $this->now();
-
-        if ($current->contains($this->getStartDate())) {
-            return 'period.month.this';
-        }
-
-        if ($current->next()->contains($this->getStartDate())) {
-            return 'period.month.next';
-        }
-
-        if ($current->prev()->contains($this->getStartDate())) {
-            return 'period.month.prev';
-        }
-
-        return 'period.month.period';
+        return 'period.month.this';
     }
 }

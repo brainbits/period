@@ -15,7 +15,7 @@
         "ext-date": "*"
     },
     "require-dev": {
-        "phpunit/phpunit": "^6.0",
+        "phpunit/phpunit": "^7.0",
         "brainbits/phpcs-standard": "^1.0@dev"
     },
     "autoload": {
