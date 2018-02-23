@@ -23,7 +23,7 @@ final class RunningYearPeriod implements PeriodInterface
     public function __construct()
     {
         $this->startDate = new DateTimeImmutable("first day of january midnight");
-        $this->endDate = $this->startDate->modify("first day of january +1 year");
+        $this->endDate = new DateTimeImmutable('tomorrow midnight');
         $this->period = $this->startDate->format('Y');
     }
 
