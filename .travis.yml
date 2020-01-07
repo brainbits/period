@@ -4,10 +4,8 @@ sudo: false
 
 matrix:
   include:
-    - php: 7.1
+    - php: 7.4
       env: COLLECT_COVERAGE=true VALIDATE_CODING_STYLE=true
-    - php: 7.2
-      env: COLLECT_COVERAGE=true VALIDATE_CODING_STYLE=false
     - php: nightly
       env: COLLECT_COVERAGE=false VALIDATE_CODING_STYLE=false
   allow_failures:
@@ -25,6 +23,8 @@ install:
   - composer update --no-interaction --prefer-source
 
 script: 
+  - vendor/bin/phpcs
+  - vendor/bin/phpstan analyze
   - vendor/bin/phpunit --coverage-clover=build/clover.xml
 
 after_script:

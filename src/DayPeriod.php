@@ -1,26 +1,28 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Brainbits\Period;
 
-use Brainbits\Period\Exception\PeriodException;
+use Brainbits\Period\Exception\InvalidDateString;
+use Brainbits\Period\Exception\InvalidPeriodString;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Throwable;
+use function explode;
+use function Safe\preg_match;
+use function Safe\sprintf;
 
 /**
  * Day period.
  */
 final class DayPeriod implements PeriodInterface
 {
-    private $period;
-
-    private $startDate;
-
-    private $endDate;
+    private string $period;
+    private DateTimeImmutable $startDate;
+    private DateTimeImmutable $endDate;
 
     public function __construct(DateTimeImmutable $date)
     {
@@ -32,12 +34,12 @@ final class DayPeriod implements PeriodInterface
     public static function createFromPeriodString(string $period): self
     {
         if (!preg_match('/^\d\d\d\d-\d\d-\d\d$/', $period, $match)) {
-            throw new PeriodException("$period is not a valid day period string (e.g. 2017-12-24).");
+            throw InvalidPeriodString::invalidDayPeriod($period);
         }
 
-        list($year, $month, $day) = explode('-', $period);
+        [$year, $month, $day] = explode('-', $period);
 
-        return new self(new DateTimeImmutable("$year-$month-$day"));
+        return new self(new DateTimeImmutable(sprintf('%s-%s-%s', $year, $month, $day)));
     }
 
     public static function createFromDateString(string $date): self
@@ -45,7 +47,7 @@ final class DayPeriod implements PeriodInterface
         try {
             $period = new self(new DateTimeImmutable($date));
         } catch (Throwable $e) {
-            throw new PeriodException("$date is not a valid date.");
+            throw InvalidDateString::invalidDate($date);
         }
 
         return $period;

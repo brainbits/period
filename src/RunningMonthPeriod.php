@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Brainbits\Period;
 
@@ -14,11 +14,9 @@ use DateTimeInterface;
  */
 final class RunningMonthPeriod implements PeriodInterface
 {
-    private $period;
-
-    private $startDate;
-
-    private $endDate;
+    private string $period;
+    private DateTimeImmutable $startDate;
+    private DateTimeImmutable $endDate;
 
     public function __construct()
     {

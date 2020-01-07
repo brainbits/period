@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Brainbits\Period;
 
@@ -14,15 +14,13 @@ use DateTimeInterface;
  */
 final class RunningYearPeriod implements PeriodInterface
 {
-    private $period;
-
-    private $startDate;
-
-    private $endDate;
+    private string $period;
+    private DateTimeImmutable $startDate;
+    private DateTimeImmutable $endDate;
 
     public function __construct()
     {
-        $this->startDate = new DateTimeImmutable("first day of january midnight");
+        $this->startDate = new DateTimeImmutable('first day of january midnight');
         $this->endDate = new DateTimeImmutable('tomorrow midnight');
         $this->period = $this->startDate->format('Y');
     }

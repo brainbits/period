@@ -1,41 +1,42 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Brainbits\Period;
 
-use Brainbits\Period\Exception\PeriodException;
+use Brainbits\Period\Exception\InvalidDateString;
+use Brainbits\Period\Exception\InvalidPeriodString;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Throwable;
+use function Safe\preg_match;
+use function Safe\sprintf;
 
 /**
  * Year period
  */
 final class YearPeriod implements PeriodInterface
 {
-    private $period;
-
-    private $startDate;
-
-    private $endDate;
+    private string $period;
+    private DateTimeImmutable $startDate;
+    private DateTimeImmutable $endDate;
 
     public function __construct(DateTimeInterface $date)
     {
         $this->period = $date->format('Y');
-        $this->startDate = new DateTimeImmutable("first day of january {$this->period} midnight");
-        $this->endDate = new DateTimeImmutable("first day of january {$this->period} +1 year");
+        $this->startDate = new DateTimeImmutable(sprintf('first day of january %s midnight', $this->period));
+        $this->endDate = new DateTimeImmutable(sprintf('first day of january %s +1 year', $this->period));
     }
 
     public static function createFromPeriodString(string $period): self
     {
         if (!preg_match('/^\d\d{2,4}$/', $period, $match)) {
-            throw new PeriodException("$period is not a valid year period string (e.g. 2017).");
+            throw InvalidPeriodString::invalidYearPeriod($period);
         }
 
-        return new self(new DateTimeImmutable("first day of january $period midnight"));
+        return new self(new DateTimeImmutable(sprintf('first day of january %s midnight', $period)));
     }
 
     public static function createFromDateString(string $date): self
@@ -43,7 +44,7 @@ final class YearPeriod implements PeriodInterface
         try {
             $period = new self(new DateTimeImmutable($date));
         } catch (Throwable $e) {
-            throw new PeriodException("$date is not a valid date.");
+            throw InvalidDateString::invalidDate($date);
         }
 
         return $period;

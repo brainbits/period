@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Brainbits\PeriodTest;
 
@@ -15,9 +15,7 @@ use PHPUnit\Framework\TestCase;
  */
 class RangePeriodTest extends TestCase
 {
-    /**
-     * @var RangePeriod
-     */
+    /** @var RangePeriod */
     private $period;
 
     protected function setUp(): void
@@ -101,7 +99,7 @@ class RangePeriodTest extends TestCase
         $date3 = new DateTimeImmutable();
         $date4 = $date3->modify('+10 days');
         $this->assertInstanceOf(RangePeriod::class, $period->now());
-        $this->assertEquals(new RangePeriod($date3, $date4), $period->now(), '', 1);
+        $this->assertEquals((new RangePeriod($date3, $date4))->getPeriod(), $period->now()->getPeriod());
     }
 
     public function testItHasDatePeriod(): void
@@ -114,6 +112,7 @@ class RangePeriodTest extends TestCase
         foreach ($period->getDatePeriod(new DateInterval('P1D')) as $x) {
             ++$i;
         }
+
         $this->assertSame(10, $i);
     }
 
@@ -123,7 +122,10 @@ class RangePeriodTest extends TestCase
         $date2 = new DateTimeImmutable('2015-01-11');
         $period = new RangePeriod($date1, $date2);
         $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals((new DateInterval('P10D'))->format('y%y_m%m_d%d_h%h_i%i_s%s'), $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'));
+        $this->assertEquals(
+            (new DateInterval('P10D'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
+            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
+        );
     }
 
     public function testItHasPeriodRangeTranslationKey(): void

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Brainbits\Period;
 
@@ -8,34 +8,24 @@ use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
+use function Safe\sprintf;
 
 /**
  * Running week period
  */
 final class RunningWeekPeriod implements PeriodInterface
 {
-    /**
-     * @var string
-     */
-    private $period;
-
-    /**
-     * @var DateTimeImmutable
-     */
-    private $startDate;
-
-    /**
-     * @var DateTimeImmutable
-     */
-    private $endDate;
+    private string $period;
+    private DateTimeImmutable $startDate;
+    private DateTimeImmutable $endDate;
 
     public function __construct()
     {
         $date = new DateTimeImmutable();
-        $day = $date->format('N') - 1;
+        $day = (int) $date->format('N') - 1;
 
         $this->period = $date->format('o-W');
-        $this->startDate = $date->modify("-$day day midnight");
+        $this->startDate = $date->modify(sprintf('-%s day midnight', $day));
         $this->endDate = new DateTimeImmutable('tomorrow midnight');
     }
 

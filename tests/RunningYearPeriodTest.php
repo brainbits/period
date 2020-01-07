@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Brainbits\PeriodTest;
 
@@ -10,6 +10,7 @@ use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use function date;
 
 /**
  * @covers \Brainbits\Period\RunningYearPeriod
@@ -90,6 +91,7 @@ class RunningYearPeriodTest extends TestCase
         foreach ($period->getDatePeriod(new DateInterval('P1D')) as $x) {
             ++$i;
         }
+
         $this->assertSame(date('z') + 1, $i);
     }
 
@@ -97,7 +99,10 @@ class RunningYearPeriodTest extends TestCase
     {
         $period = new RunningYearPeriod();
         $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals((new DateInterval('P1Y'))->format('y%y_m%m_d%d_h%h_i%i_s%s'), $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'));
+        $this->assertEquals(
+            (new DateInterval('P1Y'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
+            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
+        );
     }
 
     public function testItHasThisDayTranslationKey(): void

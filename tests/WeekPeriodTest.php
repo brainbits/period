@@ -1,15 +1,17 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Brainbits\PeriodTest;
 
-use Brainbits\Period\Exception\PeriodException;
+use Brainbits\Period\Exception\InvalidDateString;
+use Brainbits\Period\Exception\InvalidPeriodString;
 use Brainbits\Period\WeekPeriod;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+use function date;
 
 /**
  * @covers \Brainbits\Period\WeekPeriod
@@ -31,7 +33,7 @@ class WeekPeriodTest extends TestCase
 
     public function testItIsNotInitializableWithInvalidPeriod(): void
     {
-        $this->expectException(PeriodException::class);
+        $this->expectException(InvalidPeriodString::class);
         WeekPeriod::createFromPeriodString('2015');
     }
 
@@ -43,7 +45,7 @@ class WeekPeriodTest extends TestCase
 
     public function testItIsNotInitializableWithInvalidDate(): void
     {
-        $this->expectException(PeriodException::class);
+        $this->expectException(InvalidDateString::class);
         WeekPeriod::createFromDateString('2015.01.08');
     }
 
@@ -125,6 +127,7 @@ class WeekPeriodTest extends TestCase
         foreach ($period->getDatePeriod(new DateInterval('P1D')) as $x) {
             ++$i;
         }
+
         $this->assertSame(7, $i);
     }
 
@@ -133,7 +136,10 @@ class WeekPeriodTest extends TestCase
         $date = new DateTimeImmutable('2015-01-07');
         $period = new WeekPeriod($date);
         $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals((new DateInterval('P1W'))->format('y%y_m%m_d%d_h%h_i%i_s%s'), $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'));
+        $this->assertEquals(
+            (new DateInterval('P1W'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
+            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
+        );
     }
 
     public function testItHasPeriodDayTranslationKey(): void

@@ -1,12 +1,14 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Brainbits\Period\Exception;
 
+use Throwable;
+
 /**
- * Interface for a period.
+ * Scoped period exception marker.
  */
-class PeriodException extends InvalidArgumentException
+interface PeriodException extends Throwable
 {
 }
