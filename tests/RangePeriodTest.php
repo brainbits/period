@@ -15,8 +15,7 @@ use PHPUnit\Framework\TestCase;
  */
 class RangePeriodTest extends TestCase
 {
-    /** @var RangePeriod */
-    private $period;
+    private RangePeriod $period;
 
     protected function setUp(): void
     {
