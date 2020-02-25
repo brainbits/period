@@ -12,7 +12,7 @@ use DateTimeInterface;
 /**
  * Month period
  */
-final class RunningMonthPeriod implements PeriodInterface
+final class RunningMonthPeriod implements PeriodInterface, RunningPeriod
 {
     private string $period;
     private DateTimeImmutable $startDate;

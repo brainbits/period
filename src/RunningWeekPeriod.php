@@ -13,7 +13,7 @@ use function Safe\sprintf;
 /**
  * Running week period
  */
-final class RunningWeekPeriod implements PeriodInterface
+final class RunningWeekPeriod implements PeriodInterface, RunningPeriod
 {
     private string $period;
     private DateTimeImmutable $startDate;
