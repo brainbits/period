@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brainbits\Period\Exception;
 
 use InvalidArgumentException;
+
 use function Safe\sprintf;
 
 /**
