@@ -10,6 +10,7 @@ use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
+
 use function date;
 
 /**
@@ -31,7 +32,10 @@ class RunningMonthPeriodTest extends TestCase
     public function testItHasAStartDate(): void
     {
         $period = new RunningMonthPeriod();
-        $this->assertEquals(new DateTimeImmutable(date('Y-m').'-01 00:00:00'), $period->getStartDate());
+        $this->assertEquals(
+            new DateTimeImmutable(date('Y-m') . '-01 00:00:00'),
+            $period->getStartDate(),
+        );
     }
 
     public function testItHasAnEndDate(): void

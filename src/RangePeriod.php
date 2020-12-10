@@ -22,7 +22,7 @@ final class RangePeriod implements PeriodInterface
     {
         $this->startDate = $startDate;
         $this->endDate = $endDate;
-        $this->period = $startDate->format('Y-m-d').' - '.$endDate->format('Y-m-d');
+        $this->period = $startDate->format('Y-m-d') . ' - ' . $endDate->format('Y-m-d');
     }
 
     public function getStartDate(): DateTimeImmutable
