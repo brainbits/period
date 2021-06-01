@@ -9,9 +9,6 @@ use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-/**
- * Interface for a period.
- */
 interface Period
 {
     public function getStartDate(): DateTimeImmutable;
@@ -24,11 +21,11 @@ interface Period
 
     public function isCurrent(): bool;
 
-    public function next(): PeriodInterface;
+    public function next(): Period;
 
-    public function prev(): PeriodInterface;
+    public function prev(): Period;
 
-    public function now(): PeriodInterface;
+    public function now(): Period;
 
     public function getDateInterval(): DateInterval;
 
@@ -38,6 +35,8 @@ interface Period
      *
      * $options can be set to DatePeriod::EXCLUDE_START_DATE to exclude
      * the start date from the set of recurring dates within the period.
+     *
+     * @return DatePeriod<DateTimeImmutable>
      */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod;
 

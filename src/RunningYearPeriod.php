@@ -9,10 +9,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-/**
- * Running year period
- */
-final class RunningYearPeriod implements PeriodInterface, RunningPeriod
+final class RunningYearPeriod implements Period, RunningPeriod
 {
     private string $period;
     private DateTimeImmutable $startDate;
@@ -55,17 +52,17 @@ final class RunningYearPeriod implements PeriodInterface, RunningPeriod
         return $this->contains(new DateTimeImmutable());
     }
 
-    public function next(): PeriodInterface
+    public function next(): Period
     {
         return new YearPeriod($this->getStartDate()->modify('+1 year'));
     }
 
-    public function prev(): PeriodInterface
+    public function prev(): Period
     {
         return new YearPeriod($this->getStartDate()->modify('-1 year'));
     }
 
-    public function now(): PeriodInterface
+    public function now(): Period
     {
         return new self();
     }
@@ -75,6 +72,9 @@ final class RunningYearPeriod implements PeriodInterface, RunningPeriod
         return new DateInterval('P1Y');
     }
 
+    /**
+     * @return DatePeriod<DateTimeImmutable>
+     */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
     {
         return new DatePeriod($this->startDate, $interval, $this->endDate, $options);

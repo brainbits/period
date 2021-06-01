@@ -16,10 +16,7 @@ use function explode;
 use function preg_match;
 use function sprintf;
 
-/**
- * Week period
- */
-final class WeekPeriod implements PeriodInterface
+final class WeekPeriod implements Period
 {
     private string $period;
     private DateTimeImmutable $startDate;
@@ -86,17 +83,17 @@ final class WeekPeriod implements PeriodInterface
         return $this->contains(new DateTimeImmutable());
     }
 
-    public function next(): PeriodInterface
+    public function next(): Period
     {
         return new self($this->getStartDate()->modify('+1 week'));
     }
 
-    public function prev(): PeriodInterface
+    public function prev(): Period
     {
         return new self($this->getStartDate()->modify('-1 week'));
     }
 
-    public function now(): PeriodInterface
+    public function now(): Period
     {
         return self::createCurrent();
     }
@@ -106,6 +103,9 @@ final class WeekPeriod implements PeriodInterface
         return new DateInterval('P1W');
     }
 
+    /**
+     * @return DatePeriod<DateTimeImmutable>
+     */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
     {
         return new DatePeriod($this->startDate, $interval, $this->endDate, $options);

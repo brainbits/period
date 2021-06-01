@@ -6,9 +6,6 @@ namespace Brainbits\Period;
 
 // phpcs:disable SlevomatCodingStandard.Classes.SuperfluousInterfaceNaming.SuperfluousSuffix
 
-/**
- * Interface for a running period.
- */
 interface RunningPeriod
 {
 }

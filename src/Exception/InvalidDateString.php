@@ -8,9 +8,6 @@ use InvalidArgumentException;
 
 use function Safe\sprintf;
 
-/**
- * Interface for a period.
- */
 final class InvalidDateString extends InvalidArgumentException implements PeriodException
 {
     public static function invalidDate(string $date): self

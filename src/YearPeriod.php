@@ -15,10 +15,7 @@ use Throwable;
 use function Safe\preg_match;
 use function Safe\sprintf;
 
-/**
- * Year period
- */
-final class YearPeriod implements PeriodInterface
+final class YearPeriod implements Period
 {
     private string $period;
     private DateTimeImmutable $startDate;
@@ -86,17 +83,17 @@ final class YearPeriod implements PeriodInterface
         return $this->contains(new DateTimeImmutable());
     }
 
-    public function next(): PeriodInterface
+    public function next(): Period
     {
         return new self($this->getStartDate()->modify('+1 year'));
     }
 
-    public function prev(): PeriodInterface
+    public function prev(): Period
     {
         return new self($this->getStartDate()->modify('-1 year'));
     }
 
-    public function now(): PeriodInterface
+    public function now(): Period
     {
         return self::createCurrent();
     }
@@ -106,6 +103,9 @@ final class YearPeriod implements PeriodInterface
         return new DateInterval('P1Y');
     }
 
+    /**
+     * @return DatePeriod<DateTimeImmutable>
+     */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
     {
         return new DatePeriod($this->startDate, $interval, $this->endDate, $options);

@@ -11,10 +11,7 @@ use DateTimeInterface;
 
 use function Safe\sprintf;
 
-/**
- * Running week period
- */
-final class RunningWeekPeriod implements PeriodInterface, RunningPeriod
+final class RunningWeekPeriod implements Period, RunningPeriod
 {
     private string $period;
     private DateTimeImmutable $startDate;
@@ -60,17 +57,17 @@ final class RunningWeekPeriod implements PeriodInterface, RunningPeriod
         return $this->contains(new DateTimeImmutable());
     }
 
-    public function next(): PeriodInterface
+    public function next(): Period
     {
         return new WeekPeriod($this->getStartDate()->modify('+1 week'));
     }
 
-    public function prev(): PeriodInterface
+    public function prev(): Period
     {
         return new WeekPeriod($this->getStartDate()->modify('-1 week'));
     }
 
-    public function now(): PeriodInterface
+    public function now(): Period
     {
         return new self();
     }
@@ -80,6 +77,9 @@ final class RunningWeekPeriod implements PeriodInterface, RunningPeriod
         return new DateInterval('P1W');
     }
 
+    /**
+     * @return DatePeriod<DateTimeImmutable>
+     */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
     {
         return new DatePeriod($this->startDate, $interval, $this->endDate, $options);

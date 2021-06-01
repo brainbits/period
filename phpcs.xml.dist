@@ -1,7 +1,5 @@
 <?xml version="1.0"?>
-<ruleset name="controlling">
-    <description>The controlling coding standard.</description>
-
+<ruleset name="brainbits">
 	<file>src</file>
 	<file>tests</file>
 
@@ -9,5 +7,5 @@
 	<arg name="colors"/>
 	<arg value="sp"/>
 
-	<rule ref="BrainbitsCodingStandardTest" />
+	<rule ref="Brainbits" />
 </ruleset>
