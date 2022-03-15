@@ -21,7 +21,7 @@ use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 
 /**
- * @covers \Brainbits\PeriodBundle\Serializer\Normalizer\PeriodNormalizer
+ * @covers \Brainbits\Period\Serializer\Normalizer\PeriodNormalizer
  */
 final class PeriodNormalizerTest extends TestCase
 {

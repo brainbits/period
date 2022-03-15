@@ -12,12 +12,12 @@ use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-use function date;
+use function Safe\date;
 
 /**
  * @covers \Brainbits\Period\YearPeriod
  */
-class YearPeriodTest extends TestCase
+final class YearPeriodTest extends TestCase
 {
     public function testItIsInitializable(): void
     {

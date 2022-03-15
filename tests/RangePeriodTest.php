@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 /**
  * @covers \Brainbits\Period\RangePeriod
  */
-class RangePeriodTest extends TestCase
+final class RangePeriodTest extends TestCase
 {
     private RangePeriod $period;
 

@@ -11,12 +11,12 @@ use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-use function date;
+use function Safe\date;
 
 /**
  * @covers \Brainbits\Period\RunningWeekPeriod
  */
-class RunningWeekPeriodTest extends TestCase
+final class RunningWeekPeriodTest extends TestCase
 {
     public function testItIsInitializable(): void
     {

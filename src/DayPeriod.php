@@ -14,7 +14,7 @@ use Throwable;
 
 use function explode;
 use function Safe\preg_match;
-use function Safe\sprintf;
+use function sprintf;
 
 final class DayPeriod implements Period
 {

@@ -23,7 +23,7 @@ use Throwable;
 use function gettype;
 use function is_string;
 use function Safe\preg_match;
-use function Safe\sprintf;
+use function sprintf;
 
 // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
 

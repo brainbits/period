@@ -13,13 +13,17 @@
     "require": {
         "php": "^8.0",
         "ext-date": "*",
-        "thecodingmachine/safe": "^1.0"
+        "thecodingmachine/safe": "^1.0|^2.0"
     },
     "require-dev": {
         "phpunit/phpunit": "^9.3",
         "brainbits/phpcs-standard": "^5.0",
-        "phpstan/phpstan": "^0.12.42",
-        "symfony/serializer": "^5.0"
+        "phpstan/phpstan": "^1.0.0",
+        "symfony/serializer": "^5.0",
+        "thecodingmachine/phpstan-safe-rule": "^1.2",
+        "ergebnis/phpstan-rules": "^1.0",
+        "jangregor/phpstan-prophecy": "^1.0",
+        "thecodingmachine/phpstan-strict-rules": "^1.0"
     },
     "suggest": {
         "symfony/serializer": "If you need to serialize periods"
@@ -33,6 +37,11 @@
     "extra": {
         "branch-alias": {
             "dev-master": "1.1-dev"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
         }
     }
 }

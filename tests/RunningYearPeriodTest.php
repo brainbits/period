@@ -11,12 +11,12 @@ use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-use function date;
+use function Safe\date;
 
 /**
  * @covers \Brainbits\Period\RunningYearPeriod
  */
-class RunningYearPeriodTest extends TestCase
+final class RunningYearPeriodTest extends TestCase
 {
     public function testItIsInitializable(): void
     {
@@ -96,7 +96,7 @@ class RunningYearPeriodTest extends TestCase
             ++$i;
         }
 
-        $this->assertSame(date('z') + 1, $i);
+        $this->assertSame((int) date('z') + 1, $i);
     }
 
     public function testItHasDateInterval(): void

@@ -9,7 +9,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-use function Safe\sprintf;
+use function sprintf;
 
 final class RunningWeekPeriod implements Period, RunningPeriod
 {

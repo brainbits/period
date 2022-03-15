@@ -13,7 +13,7 @@ use DateTimeInterface;
 use Throwable;
 
 use function explode;
-use function preg_match;
+use function Safe\preg_match;
 use function sprintf;
 
 final class WeekPeriod implements Period

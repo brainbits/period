@@ -6,7 +6,7 @@ namespace Brainbits\Period\Exception;
 
 use InvalidArgumentException;
 
-use function Safe\sprintf;
+use function sprintf;
 
 final class InvalidPeriodString extends InvalidArgumentException implements PeriodException
 {

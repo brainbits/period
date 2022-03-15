@@ -13,7 +13,7 @@ use DateTimeInterface;
 use Throwable;
 
 use function Safe\preg_match;
-use function Safe\sprintf;
+use function sprintf;
 
 final class YearPeriod implements Period
 {
