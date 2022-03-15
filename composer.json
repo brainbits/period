@@ -19,7 +19,7 @@
         "phpunit/phpunit": "^9.3",
         "brainbits/phpcs-standard": "^5.0",
         "phpstan/phpstan": "^1.0.0",
-        "symfony/serializer": "^5.0",
+        "symfony/serializer": "^5.3",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
         "ergebnis/phpstan-rules": "^1.0",
         "jangregor/phpstan-prophecy": "^1.0",
