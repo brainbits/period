@@ -155,7 +155,7 @@ final class PeriodNormalizer implements NormalizerInterface, DenormalizerInterfa
                     return new RangePeriod($date1, $date2);
             }
         } catch (Throwable $e) {
-            throw new NotNormalizableValueException($e->getMessage(), $e->getCode(), $e);
+            throw new NotNormalizableValueException($e->getMessage(), 0, $e);
         }
 
         throw new NotNormalizableValueException(sprintf('Unknown type %s', $type));
