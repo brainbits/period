@@ -9,7 +9,8 @@ use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-interface Period extends PeriodInterface
+/** @deprecated Use Period interface */
+interface PeriodInterface // phpcs:ignore
 {
     public function getStartDate(): DateTimeImmutable;
 

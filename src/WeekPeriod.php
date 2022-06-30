@@ -17,6 +17,9 @@ use function Safe\preg_match;
 use function sprintf;
 use function str_starts_with;
 use function substr;
+use function trigger_error;
+
+use const E_USER_DEPRECATED;
 
 final class WeekPeriod implements Period
 {
@@ -31,6 +34,14 @@ final class WeekPeriod implements Period
         $this->period = $date->format('o-W');
         $this->startDate = $date->modify(sprintf('-%s day midnight', $day));
         $this->endDate = $this->startDate->modify('+1 week -1 second');
+    }
+
+    /** @deprecated use PeriodFactory::currentWeek() */
+    public static function createCurrent(): self
+    {
+        trigger_error(__METHOD__ . ' is deprecated, use PeriodFactory::currentWeek()', E_USER_DEPRECATED);
+
+        return new self(new DateTimeImmutable());
     }
 
     public static function createFromPeriodString(string $period): self
@@ -74,6 +85,14 @@ final class WeekPeriod implements Period
         return $this->endDate;
     }
 
+    /** @deprecated use getPeriodString() */
+    public function getPeriod(): string
+    {
+        trigger_error(__METHOD__ . ' is deprecated, use getPeriodString()', E_USER_DEPRECATED);
+
+        return $this->getPeriodString();
+    }
+
     public function getPeriodString(): string
     {
         return $this->period;
@@ -92,6 +111,38 @@ final class WeekPeriod implements Period
     public function contains(DateTimeInterface $date): bool
     {
         return $this->getStartDate() <= $date && $date <= $this->getEndDate();
+    }
+
+    /** @deprecated use PeriodFactory::isCurrent() */
+    public function isCurrent(): bool
+    {
+        trigger_error(__METHOD__ . ' is deprecated, use PeriodFactory::isCurrent()', E_USER_DEPRECATED);
+
+        return $this->contains(new DateTimeImmutable());
+    }
+
+    /** @deprecated use PeriodFactory::next() */
+    public function next(): Period
+    {
+        trigger_error(__METHOD__ . ' is deprecated, use PeriodFactory::next()', E_USER_DEPRECATED);
+
+        return new self($this->getStartDate()->modify('+1 week'));
+    }
+
+    /** @deprecated use PeriodFactory::previous() */
+    public function prev(): Period
+    {
+        trigger_error(__METHOD__ . ' is deprecated, use PeriodFactory::previous()', E_USER_DEPRECATED);
+
+        return new self($this->getStartDate()->modify('-1 week'));
+    }
+
+    /** @deprecated use PeriodFactory::currentWeek() */
+    public function now(): self
+    {
+        trigger_error(__METHOD__ . ' is deprecated, use PeriodFactory::currentWeek()', E_USER_DEPRECATED);
+
+        return self::createCurrent();
     }
 
     public function getDateInterval(): DateInterval
