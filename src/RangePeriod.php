@@ -4,10 +4,14 @@ declare(strict_types=1);
 
 namespace Brainbits\Period;
 
+use Brainbits\Period\Exception\InvalidPeriodIdentifier;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
+
+use function Safe\preg_match;
+use function sprintf;
 
 final class RangePeriod implements Period
 {
@@ -17,9 +21,23 @@ final class RangePeriod implements Period
 
     public function __construct(DateTimeImmutable $startDate, DateTimeImmutable $endDate)
     {
-        $this->startDate = $startDate;
-        $this->endDate = $endDate;
+        $this->startDate = $startDate->modify('midnight');
+        $this->endDate = $endDate->modify('midnight +1 day -1 second');
         $this->period = $startDate->format('Y-m-d') . ' - ' . $endDate->format('Y-m-d');
+    }
+
+    public static function createFromPeriodIdentifier(string $periodIdentifier): self
+    {
+        if (!preg_match('/^range#(\d\d\d\d)-(\d\d)-(\d\d)#(\d\d\d\d)-(\d\d)-(\d\d)$/', $periodIdentifier, $match)) {
+            throw InvalidPeriodIdentifier::invalidRangePeriodIdentifier($periodIdentifier);
+        }
+
+        [, $startYear, $startMonth, $startDay, $endYear, $endMonth, $endDay] = $match;
+
+        return new self(
+            new DateTimeImmutable(sprintf('%s-%s-%s', $startYear, $startMonth, $startDay)),
+            new DateTimeImmutable(sprintf('%s-%s-%s', $endYear, $endMonth, $endDay)),
+        );
     }
 
     public function getStartDate(): DateTimeImmutable
@@ -32,9 +50,24 @@ final class RangePeriod implements Period
         return $this->endDate;
     }
 
-    public function getPeriod(): string
+    public function getPeriodString(): string
     {
         return $this->period;
+    }
+
+    public function getPeriodIdentifier(): string
+    {
+        return sprintf(
+            '%s#%s#%s',
+            $this->getPeriodPrefix(),
+            $this->startDate->format('Y-m-d'),
+            $this->endDate->format('Y-m-d'),
+        );
+    }
+
+    public function getPeriodPrefix(): string
+    {
+        return 'range';
     }
 
     public function contains(DateTimeInterface $date): bool
@@ -42,31 +75,9 @@ final class RangePeriod implements Period
         return $this->getStartDate() <= $date && $date <= $this->getEndDate();
     }
 
-    public function isCurrent(): bool
-    {
-        return $this->contains(new DateTimeImmutable());
-    }
-
-    public function next(): Period
-    {
-        return new static($this->getEndDate(), $this->getEndDate()->add($this->getDateInterval()));
-    }
-
-    public function prev(): Period
-    {
-        return new static($this->getStartDate()->sub($this->getDateInterval()), $this->getStartDate());
-    }
-
-    public function now(): Period
-    {
-        $today = new DateTimeImmutable();
-
-        return new self($today, $today->add($this->getDateInterval()));
-    }
-
     public function getDateInterval(): DateInterval
     {
-        return $this->startDate->diff($this->endDate);
+        return $this->startDate->diff($this->endDate->modify('+1 second'));
     }
 
     /**
@@ -75,10 +86,5 @@ final class RangePeriod implements Period
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
     {
         return new DatePeriod($this->startDate, $interval, $this->endDate, $options);
-    }
-
-    public function getTranslationKey(): string
-    {
-        return 'period.range.period';
     }
 }

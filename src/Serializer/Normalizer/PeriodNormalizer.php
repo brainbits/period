@@ -4,25 +4,16 @@ declare(strict_types=1);
 
 namespace Brainbits\Period\Serializer\Normalizer;
 
-use Brainbits\Period\DayPeriod;
-use Brainbits\Period\MonthPeriod;
+use Brainbits\Period\Exception\PeriodException;
 use Brainbits\Period\Period;
-use Brainbits\Period\RangePeriod;
-use Brainbits\Period\RunningMonthPeriod;
-use Brainbits\Period\RunningWeekPeriod;
-use Brainbits\Period\RunningYearPeriod;
-use Brainbits\Period\WeekPeriod;
-use Brainbits\Period\YearPeriod;
-use DateTimeImmutable;
+use Brainbits\Period\PeriodFactory;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 use Symfony\Component\Serializer\Normalizer\DenormalizerInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Throwable;
 
 use function gettype;
 use function is_string;
-use function Safe\preg_match;
 use function sprintf;
 
 // phpcs:disable SlevomatCodingStandard.TypeHints.ParameterTypeHint.MissingNativeTypeHint
@@ -32,6 +23,10 @@ use function sprintf;
  */
 final class PeriodNormalizer implements NormalizerInterface, DenormalizerInterface
 {
+    public function __construct(private readonly PeriodFactory $periodFactory)
+    {
+    }
+
     /**
      * @param mixed   $object
      * @param string  $format
@@ -42,57 +37,18 @@ final class PeriodNormalizer implements NormalizerInterface, DenormalizerInterfa
     public function normalize($object, $format = null, array $context = []): string
     {
         if (!$object instanceof Period) {
-            throw new InvalidArgumentException('The object must implement the "\Brainbits\Period\Period" interface.');
+            throw new InvalidArgumentException(sprintf('The object must implement the "%s" interface.', Period::class));
         }
 
-        $period = $object->getPeriod();
-
-        switch (true) {
-            case $object instanceof DayPeriod:
-                $type = 'day';
-                break;
-            case $object instanceof WeekPeriod:
-                $type = 'week';
-                break;
-            case $object instanceof MonthPeriod:
-                $type = 'month';
-                break;
-            case $object instanceof YearPeriod:
-                $type = 'year';
-                break;
-            case $object instanceof RunningWeekPeriod:
-                $type = 'runningweek';
-                $period = 'current';
-                break;
-            case $object instanceof RunningMonthPeriod:
-                $type = 'runningmonth';
-                $period = 'current';
-                break;
-            case $object instanceof RunningYearPeriod:
-                $type = 'runningyear';
-                $period = 'current';
-                break;
-            case $object instanceof RangePeriod:
-                $type = 'range';
-                $period = sprintf(
-                    '%s_%s',
-                    $object->getStartDate()->format('Y-m-d'),
-                    $object->getEndDate()->format('Y-m-d')
-                );
-                break;
-            default:
-                $type = 'unknown';
-                $period = 'unknown';
-        }
-
-        return sprintf('period:%s:%s', $type, $period);
+        return $object->getPeriodIdentifier();
     }
 
     /**
-     * @param mixed  $data
-     * @param string $format
+     * @param mixed   $data
+     * @param string  $format
+     * @param mixed[] $context
      */
-    public function supportsNormalization($data, $format = null): bool
+    public function supportsNormalization($data, $format = null, array $context = []): bool
     {
         return $data instanceof Period;
     }
@@ -111,62 +67,20 @@ final class PeriodNormalizer implements NormalizerInterface, DenormalizerInterfa
             throw new NotNormalizableValueException(sprintf('Data has to be a string, received %s', gettype($data)));
         }
 
-        $type = '';
-        $period = '';
-        if (preg_match('/^period:(\w+):(.+)$/', $data, $match)) {
-            $type = $match[1];
-            $period = $match[2];
-        }
-
         try {
-            switch ($type) {
-                case 'day':
-                    return DayPeriod::createFromPeriodString($period);
-
-                case 'week':
-                    return WeekPeriod::createFromPeriodString($period);
-
-                case 'month':
-                    return MonthPeriod::createFromPeriodString($period);
-
-                case 'year':
-                    return YearPeriod::createFromPeriodString($period);
-
-                case 'runningweek':
-                    return RunningWeekPeriod::createCurrent();
-
-                case 'runningmonth':
-                    return RunningMonthPeriod::createCurrent();
-
-                case 'runningyear':
-                    return RunningYearPeriod::createCurrent();
-
-                case 'range':
-                    if (!preg_match('/^(\d{4}-\d{2}-\d{2})_(\d{4}-\d{2}-\d{2})$/', $period, $match)) {
-                        throw new NotNormalizableValueException(sprintf(
-                            'Not a valid range pattern: %s',
-                            $period,
-                        ));
-                    }
-
-                    $date1 = new DateTimeImmutable($match[1]);
-                    $date2 = new DateTimeImmutable($match[2]);
-
-                    return new RangePeriod($date1, $date2);
-            }
-        } catch (Throwable $e) {
+            return $this->periodFactory->fromIdentifier($data);
+        } catch (PeriodException $e) {
             throw new NotNormalizableValueException($e->getMessage(), 0, $e);
         }
-
-        throw new NotNormalizableValueException(sprintf('Unknown type %s', $type));
     }
 
     /**
-     * @param mixed  $data
-     * @param string $type
-     * @param string $format
+     * @param mixed   $data
+     * @param string  $type
+     * @param string  $format
+     * @param mixed[] $context
      */
-    public function supportsDenormalization($data, $type, $format = null): bool
+    public function supportsDenormalization($data, $type, $format = null, array $context = []): bool
     {
         return is_string($data) && $type === Period::class;
     }

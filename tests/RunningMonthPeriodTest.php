@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Brainbits\PeriodTest;
 
-use Brainbits\Period\MonthPeriod;
+use Brainbits\Period\Exception\InvalidPeriodIdentifier;
+use Brainbits\Period\Exception\InvalidPeriodString;
 use Brainbits\Period\RunningMonthPeriod;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
-
-use function Safe\date;
 
 /**
  * @covers \Brainbits\Period\RunningMonthPeriod
@@ -20,98 +19,140 @@ final class RunningMonthPeriodTest extends TestCase
 {
     public function testItIsInitializable(): void
     {
-        $period = new RunningMonthPeriod();
-        $this->assertEquals(new DateTimeImmutable('first day of this month midnight'), $period->getStartDate());
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-06-18'));
+
+        self::assertEquals('2015-06-01T00:00:00+02:00', $period->getStartDate()->format('c'));
     }
 
-    public function testItIsInitializableWithCurrentPeriod(): void
+    public function testItIsInitializableWithPeriodIdentifier(): void
     {
-        $this->assertInstanceOf(RunningMonthPeriod::class, RunningMonthPeriod::createCurrent());
+        $period = RunningMonthPeriod::createFromPeriodIdentifier(
+            'running-month#2015-02',
+            new DateTimeImmutable('2015-06-18'),
+        );
+
+        self::assertEquals('2015-02-01T00:00:00+01:00', $period->getStartDate()->format('c'));
+    }
+
+    public function testItIsNotInitializableWithInvalidPeriodIdentifier(): void
+    {
+        $this->expectException(InvalidPeriodIdentifier::class);
+        $this->expectExceptionMessage(
+            'foo#bar is not a valid running month period identifier (e.g. running-month#2017-12).'
+        );
+
+        RunningMonthPeriod::createFromPeriodIdentifier('foo#bar', new DateTimeImmutable('2015-06-18'));
+    }
+
+    public function testItIsInitializableWithPeriod(): void
+    {
+        $period = RunningMonthPeriod::createFromPeriodString('2015-06', new DateTimeImmutable('2015-06-18'));
+
+        self::assertEquals('2015-06-01T00:00:00+02:00', $period->getStartDate()->format('c'));
+    }
+
+    public function testItIsNotInitializableWithInvalidPeriod(): void
+    {
+        $this->expectException(InvalidPeriodString::class);
+        $this->expectExceptionMessage('2015 is not a valid month period string (e.g. 2017-12).');
+
+        RunningMonthPeriod::createFromPeriodString('2015', new DateTimeImmutable('2015-06-18'));
     }
 
     public function testItHasAStartDate(): void
     {
-        $period = new RunningMonthPeriod();
-        $this->assertEquals(
-            new DateTimeImmutable(date('Y-m') . '-01 00:00:00'),
-            $period->getStartDate(),
-        );
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-06-18'));
+
+        self::assertEquals('2015-06-01T00:00:00+02:00', $period->getStartDate()->format('c'));
+    }
+
+    public function testItHasARunningEndDate(): void
+    {
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-06-18'));
+
+        self::assertEquals('2015-06-18T23:59:59+02:00', $period->getEndDate()->format('c'));
     }
 
     public function testItHasAnEndDate(): void
     {
-        $period = new RunningMonthPeriod();
-        $date = new DateTimeImmutable(date('Y-m-d 23:59:59'));
-        $this->assertEquals($date->format('Y-m-d H:i:s'), $period->getEndDate()->format('Y-m-d H:i:s'));
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-07-03'));
+
+        self::assertEquals('2015-06-30T23:59:59+02:00', $period->getEndDate()->format('c'));
+    }
+
+    public function testItHasAPeriodString(): void
+    {
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-06-18'));
+
+        self::assertSame('2015-06', $period->getPeriodString());
     }
 
     public function testItHasAPeriodIdentifier(): void
     {
-        $period = new RunningMonthPeriod();
-        $this->assertSame(date('Y-m'), $period->getPeriod());
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-06-18'));
+
+        self::assertSame('running-month#2015-06', $period->getPeriodIdentifier());
+    }
+
+    public function testItContainsRunningDate(): void
+    {
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-06-18'));
+
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-05-14')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-05-31')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-06-01')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-06-18')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-06-19')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-07-25')));
     }
 
     public function testItContainsDate(): void
     {
-        $this->assertTrue(RunningMonthPeriod::createCurrent()->contains(new DateTimeImmutable('-1 min')));
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-07-18'));
+
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-05-14')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-05-31')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-06-01')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-06-18')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-06-30')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-07-01')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-07-25')));
     }
 
-    public function testItDoesNotContainDate(): void
+    public function testItHasRunningDatePeriod(): void
     {
-        $this->assertFalse(RunningMonthPeriod::createCurrent()->contains(new DateTimeImmutable('+5 days')));
-    }
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-06-18'));
 
-    public function testItCanBeTheCurrentDate(): void
-    {
-        $this->assertTrue(RunningMonthPeriod::createCurrent()->isCurrent());
-    }
-
-    public function testItHasNextPeriod(): void
-    {
-        $period = new RunningMonthPeriod();
-        $this->assertInstanceOf(MonthPeriod::class, $period->next());
-        $this->assertEquals(MonthPeriod::createCurrent()->next(), $period->next());
-    }
-
-    public function testItHasPreviousPeriod(): void
-    {
-        $period = new RunningMonthPeriod();
-        $this->assertInstanceOf(MonthPeriod::class, $period->prev());
-        $this->assertEquals(MonthPeriod::createCurrent()->prev(), $period->prev());
-    }
-
-    public function testItHasNowPeriod(): void
-    {
-        $period = new RunningMonthPeriod();
-        $this->assertInstanceOf(RunningMonthPeriod::class, $period->now());
-        $this->assertEquals(RunningMonthPeriod::createCurrent(), $period->now());
-    }
-
-    public function testItHasDatePeriod(): void
-    {
-        $period = new RunningMonthPeriod();
-        $this->assertInstanceOf(DatePeriod::class, $period->getDatePeriod(new DateInterval('P1D')));
+        self::assertInstanceOf(DatePeriod::class, $period->getDatePeriod(new DateInterval('P1D')));
         $i = 0;
         foreach ($period->getDatePeriod(new DateInterval('P1D')) as $x) {
             ++$i;
         }
 
-        $this->assertSame((int) date('d'), $i);
+        self::assertSame(18, $i);
+    }
+
+    public function testItHasDatePeriod(): void
+    {
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-07-18'));
+
+        self::assertInstanceOf(DatePeriod::class, $period->getDatePeriod(new DateInterval('P1D')));
+        $i = 0;
+        foreach ($period->getDatePeriod(new DateInterval('P1D')) as $x) {
+            ++$i;
+        }
+
+        self::assertSame(30, $i);
     }
 
     public function testItHasDateInterval(): void
     {
-        $period = new RunningMonthPeriod();
-        $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals(
+        $period = new RunningMonthPeriod(new DateTimeImmutable('2015-06-02'), new DateTimeImmutable('2015-06-18'));
+
+        self::assertInstanceOf(DateInterval::class, $period->getDateInterval());
+        self::assertEquals(
             (new DateInterval('P1M'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
             $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
         );
-    }
-
-    public function testItHasThisDayTranslationKey(): void
-    {
-        $period = new RunningMonthPeriod();
-        $this->assertSame('period.month.this', $period->getTranslationKey());
     }
 }

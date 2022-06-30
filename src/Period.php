@@ -15,17 +15,13 @@ interface Period
 
     public function getEndDate(): DateTimeImmutable;
 
-    public function getPeriod(): string;
+    public function getPeriodString(): string;
+
+    public function getPeriodIdentifier(): string;
+
+    public function getPeriodPrefix(): string;
 
     public function contains(DateTimeInterface $date): bool;
-
-    public function isCurrent(): bool;
-
-    public function next(): Period;
-
-    public function prev(): Period;
-
-    public function now(): Period;
 
     public function getDateInterval(): DateInterval;
 
@@ -39,6 +35,4 @@ interface Period
      * @return DatePeriod<DateTimeImmutable>
      */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod;
-
-    public function getTranslationKey(): string;
 }

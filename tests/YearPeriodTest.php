@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Brainbits\PeriodTest;
 
 use Brainbits\Period\Exception\InvalidDateString;
+use Brainbits\Period\Exception\InvalidPeriodIdentifier;
 use Brainbits\Period\Exception\InvalidPeriodString;
 use Brainbits\Period\YearPeriod;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
-
-use function Safe\date;
 
 /**
  * @covers \Brainbits\Period\YearPeriod
@@ -23,13 +22,28 @@ final class YearPeriodTest extends TestCase
     {
         $date = new DateTimeImmutable('2015-01-07');
         $period = new YearPeriod($date);
-        $this->assertEquals(new DateTimeImmutable('2015-01-01'), $period->getStartDate());
+        $this->assertEquals('2015-01-01T00:00:00+01:00', $period->getStartDate()->format('c'));
+    }
+
+    public function testItIsInitializableWithPeriodIdentifier(): void
+    {
+        $period = YearPeriod::createFromPeriodIdentifier('year#2015');
+
+        self::assertEquals('2015-01-01T00:00:00+01:00', $period->getStartDate()->format('c'));
+    }
+
+    public function testItIsNotInitializableWithInvalidPeriodIdentifier(): void
+    {
+        $this->expectException(InvalidPeriodIdentifier::class);
+        $this->expectExceptionMessage('foo#bar is not a valid year period identifier (e.g. year#2017).');
+
+        YearPeriod::createFromPeriodIdentifier('foo#bar');
     }
 
     public function testItIsInitializableWithPeriod(): void
     {
         $period = YearPeriod::createFromPeriodString('2015');
-        $this->assertEquals(new DateTimeImmutable('2015-01-01'), $period->getStartDate());
+        $this->assertEquals('2015-01-01T00:00:00+01:00', $period->getStartDate()->format('c'));
     }
 
     public function testItIsNotInitializableWithInvalidPeriod(): void
@@ -42,7 +56,7 @@ final class YearPeriodTest extends TestCase
     public function testItIsInitializableWithDate(): void
     {
         $period = YearPeriod::createFromDateString('2015-01-08');
-        $this->assertEquals(new DateTimeImmutable('2015-01-01'), $period->getStartDate());
+        $this->assertEquals('2015-01-01T00:00:00+01:00', $period->getStartDate()->format('c'));
     }
 
     public function testItIsNotInitializableWithInvalidDate(): void
@@ -58,72 +72,44 @@ final class YearPeriodTest extends TestCase
         $this->assertEquals(new DateTimeImmutable('2015-01-01'), $period->getStartDate());
     }
 
-    public function testItIsInitializableWithCurrentPeriod(): void
-    {
-        $this->assertInstanceOf(YearPeriod::class, YearPeriod::createCurrent());
-    }
-
     public function testItHasAStartDate(): void
     {
         $period = YearPeriod::createFromPeriodString('2015');
-        $this->assertEquals(new DateTimeImmutable('2015-01-01 00:00:00'), $period->getStartDate());
+        $this->assertEquals('2015-01-01T00:00:00+01:00', $period->getStartDate()->format('c'));
     }
 
     public function testItHasAnEndDate(): void
     {
         $date = new DateTimeImmutable('2015-01-01');
         $period = new YearPeriod($date);
-        $this->assertEquals($date->modify('+1 year midnight -1 second'), $period->getEndDate());
+        $this->assertEquals('2015-12-31T23:59:59+01:00', $period->getEndDate()->format('c'));
+    }
+
+    public function testItHasAPeriodString(): void
+    {
+        $date = new DateTimeImmutable('2015-01-07');
+        $period = new YearPeriod($date);
+        $this->assertSame('2015', $period->getPeriodString());
     }
 
     public function testItHasAPeriodIdentifier(): void
     {
         $date = new DateTimeImmutable('2015-01-07');
         $period = new YearPeriod($date);
-        $this->assertSame('2015', $period->getPeriod());
+        $this->assertSame('year#2015', $period->getPeriodIdentifier());
     }
 
     public function testItContainsDate(): void
     {
-        $this->assertTrue(YearPeriod::createCurrent()->contains(new DateTimeImmutable()));
-    }
-
-    public function testItDoesNotContainDate(): void
-    {
-        $this->assertFalse(YearPeriod::createCurrent()->contains(new DateTimeImmutable('-2 years')));
-    }
-
-    public function testItCanBeTheCurrentDate(): void
-    {
-        $this->assertTrue(YearPeriod::createCurrent()->isCurrent());
-    }
-
-    public function testItCanNotBeTheCurrentDate(): void
-    {
         $period = YearPeriod::createFromPeriodString('2015');
-        $this->assertFalse($period->isCurrent());
-    }
 
-    public function testItHasNextPeriod(): void
-    {
-        $period = YearPeriod::createFromPeriodString('2015');
-        $this->assertInstanceOf(YearPeriod::class, $period->next());
-        $this->assertEquals(YearPeriod::createFromPeriodString('2016'), $period->next());
-    }
-
-    public function testItHasPreviousPeriod(): void
-    {
-        $period = YearPeriod::createFromPeriodString('2015');
-        $this->assertInstanceOf(YearPeriod::class, $period->prev());
-        $this->assertEquals(YearPeriod::createFromPeriodString('2014'), $period->prev());
-    }
-
-    public function testItHasNowPeriod(): void
-    {
-        $date = new DateTimeImmutable('2015-01-07');
-        $period = new YearPeriod($date);
-        $this->assertInstanceOf(YearPeriod::class, $period->now());
-        $this->assertEquals(YearPeriod::createFromPeriodString(date('Y')), $period->now());
+        self::assertFalse($period->contains(new DateTimeImmutable('2014-07-07')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2014-12-31')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-01-01')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-06-06')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-12-31')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2016-01-01')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2016-07-01')));
     }
 
     public function testItHasDatePeriod(): void
@@ -148,29 +134,5 @@ final class YearPeriodTest extends TestCase
             (new DateInterval('P1Y'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
             $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
         );
-    }
-
-    public function testItHasPeriodDayTranslationKey(): void
-    {
-        $period = YearPeriod::createFromPeriodString('2015');
-        $this->assertSame('period.year.period', $period->getTranslationKey());
-    }
-
-    public function testItHasThisDayTranslationKey(): void
-    {
-        $period = new YearPeriod(new DateTimeImmutable());
-        $this->assertSame('period.year.this', $period->getTranslationKey());
-    }
-
-    public function testItHasNextDayTranslationKey(): void
-    {
-        $period = new YearPeriod(new DateTimeImmutable('+1 year'));
-        $this->assertSame('period.year.next', $period->getTranslationKey());
-    }
-
-    public function testItHasPrevDayTranslationKey(): void
-    {
-        $period = new YearPeriod(new DateTimeImmutable('-1 year'));
-        $this->assertSame('period.year.prev', $period->getTranslationKey());
     }
 }

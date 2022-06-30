@@ -4,27 +4,51 @@ declare(strict_types=1);
 
 namespace Brainbits\Period;
 
+use Brainbits\Period\Exception\InvalidPeriodIdentifier;
+use Brainbits\Period\Exception\InvalidPeriodString;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-final class RunningYearPeriod implements Period, RunningPeriod
+use function Safe\preg_match;
+use function sprintf;
+use function str_starts_with;
+use function substr;
+
+final class RunningYearPeriod implements Period
 {
     private string $period;
     private DateTimeImmutable $startDate;
     private DateTimeImmutable $endDate;
 
-    public function __construct()
+    public function __construct(DateTimeImmutable $date, DateTimeImmutable $now)
     {
-        $this->startDate = new DateTimeImmutable('first day of january midnight');
-        $this->endDate = new DateTimeImmutable('tomorrow midnight');
-        $this->period = $this->startDate->format('Y');
+        $this->period = $date->format('Y');
+        $this->startDate = new DateTimeImmutable(sprintf('first day of january %s midnight', $this->period));
+        if ($date->format('Y') === $now->format('Y')) {
+            $this->endDate = $now->modify('midnight +1 day -1 second');
+        } else {
+            $this->endDate = new DateTimeImmutable(sprintf('first day of january %s +1 year -1 second', $this->period));
+        }
     }
 
-    public static function createCurrent(): self
+    public static function createFromPeriodString(string $period, DateTimeImmutable $now): self
     {
-        return new self();
+        if (!preg_match('/^\d\d{2,4}$/', $period, $match)) {
+            throw InvalidPeriodString::invalidYearPeriod($period);
+        }
+
+        return new self(new DateTimeImmutable(sprintf('first day of january %s midnight', $period)), $now);
+    }
+
+    public static function createFromPeriodIdentifier(string $periodIdentifier, DateTimeImmutable $now): self
+    {
+        if (!str_starts_with($periodIdentifier, 'running-year#')) {
+            throw InvalidPeriodIdentifier::invalidRunningYearPeriodIdentifier($periodIdentifier);
+        }
+
+        return self::createFromPeriodString(substr($periodIdentifier, 13), $now);
     }
 
     public function getStartDate(): DateTimeImmutable
@@ -34,37 +58,27 @@ final class RunningYearPeriod implements Period, RunningPeriod
 
     public function getEndDate(): DateTimeImmutable
     {
-        return $this->endDate->modify('-1 second');
+        return $this->endDate;
     }
 
-    public function getPeriod(): string
+    public function getPeriodString(): string
     {
         return $this->period;
+    }
+
+    public function getPeriodIdentifier(): string
+    {
+        return sprintf('%s#%s', $this->getPeriodPrefix(), $this->period);
+    }
+
+    public function getPeriodPrefix(): string
+    {
+        return 'running-year';
     }
 
     public function contains(DateTimeInterface $date): bool
     {
         return $this->getStartDate() <= $date && $date <= $this->getEndDate();
-    }
-
-    public function isCurrent(): bool
-    {
-        return $this->contains(new DateTimeImmutable());
-    }
-
-    public function next(): Period
-    {
-        return new YearPeriod($this->getStartDate()->modify('+1 year'));
-    }
-
-    public function prev(): Period
-    {
-        return new YearPeriod($this->getStartDate()->modify('-1 year'));
-    }
-
-    public function now(): Period
-    {
-        return new self();
     }
 
     public function getDateInterval(): DateInterval

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brainbits\Period;
 
 use Brainbits\Period\Exception\InvalidDateString;
+use Brainbits\Period\Exception\InvalidPeriodIdentifier;
 use Brainbits\Period\Exception\InvalidPeriodString;
 use DateInterval;
 use DatePeriod;
@@ -14,6 +15,8 @@ use Throwable;
 
 use function Safe\preg_match;
 use function sprintf;
+use function str_starts_with;
+use function substr;
 
 final class YearPeriod implements Period
 {
@@ -25,7 +28,7 @@ final class YearPeriod implements Period
     {
         $this->period = $date->format('Y');
         $this->startDate = new DateTimeImmutable(sprintf('first day of january %s midnight', $this->period));
-        $this->endDate = new DateTimeImmutable(sprintf('first day of january %s +1 year', $this->period));
+        $this->endDate = new DateTimeImmutable(sprintf('first day of january %s +1 year -1 second', $this->period));
     }
 
     public static function createFromPeriodString(string $period): self
@@ -35,6 +38,15 @@ final class YearPeriod implements Period
         }
 
         return new self(new DateTimeImmutable(sprintf('first day of january %s midnight', $period)));
+    }
+
+    public static function createFromPeriodIdentifier(string $periodIdentifier): self
+    {
+        if (!str_starts_with($periodIdentifier, 'year#')) {
+            throw InvalidPeriodIdentifier::invalidYearPeriodIdentifier($periodIdentifier);
+        }
+
+        return self::createFromPeriodString(substr($periodIdentifier, 5));
     }
 
     public static function createFromDateString(string $date): self
@@ -53,11 +65,6 @@ final class YearPeriod implements Period
         return self::createFromPeriodString((string) $year);
     }
 
-    public static function createCurrent(): self
-    {
-        return new self(new DateTimeImmutable());
-    }
-
     public function getStartDate(): DateTimeImmutable
     {
         return $this->startDate;
@@ -65,37 +72,27 @@ final class YearPeriod implements Period
 
     public function getEndDate(): DateTimeImmutable
     {
-        return $this->endDate->modify('-1 second');
+        return $this->endDate;
     }
 
-    public function getPeriod(): string
+    public function getPeriodString(): string
     {
         return $this->period;
+    }
+
+    public function getPeriodIdentifier(): string
+    {
+        return sprintf('%s#%s', $this->getPeriodPrefix(), $this->period);
+    }
+
+    public function getPeriodPrefix(): string
+    {
+        return 'year';
     }
 
     public function contains(DateTimeInterface $date): bool
     {
         return $this->getStartDate() <= $date && $date <= $this->getEndDate();
-    }
-
-    public function isCurrent(): bool
-    {
-        return $this->contains(new DateTimeImmutable());
-    }
-
-    public function next(): Period
-    {
-        return new self($this->getStartDate()->modify('+1 year'));
-    }
-
-    public function prev(): Period
-    {
-        return new self($this->getStartDate()->modify('-1 year'));
-    }
-
-    public function now(): Period
-    {
-        return self::createCurrent();
     }
 
     public function getDateInterval(): DateInterval
@@ -109,24 +106,5 @@ final class YearPeriod implements Period
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
     {
         return new DatePeriod($this->startDate, $interval, $this->endDate, $options);
-    }
-
-    public function getTranslationKey(): string
-    {
-        $current = $this->now();
-
-        if ($current->contains($this->getStartDate())) {
-            return 'period.year.this';
-        }
-
-        if ($current->next()->contains($this->getStartDate())) {
-            return 'period.year.next';
-        }
-
-        if ($current->prev()->contains($this->getStartDate())) {
-            return 'period.year.prev';
-        }
-
-        return 'period.year.period';
     }
 }
