@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace Brainbits\PeriodTest;
 
 use Brainbits\Period\Exception\InvalidDateString;
+use Brainbits\Period\Exception\InvalidPeriodIdentifier;
 use Brainbits\Period\Exception\InvalidPeriodString;
 use Brainbits\Period\WeekPeriod;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
-
-use function Safe\date;
 
 /**
  * @covers \Brainbits\Period\WeekPeriod
@@ -23,147 +22,121 @@ final class WeekPeriodTest extends TestCase
     {
         $date = new DateTimeImmutable('2015-01-07');
         $period = new WeekPeriod($date);
-        $this->assertEquals(new DateTimeImmutable('2015-01-05'), $period->getStartDate());
+
+        self::assertEquals('2015-01-05T00:00:00+01:00', $period->getStartDate()->format('c'));
+    }
+
+    public function testItIsInitializableWithPeriodIdentifier(): void
+    {
+        $period = WeekPeriod::createFromPeriodIdentifier('week#2015-02');
+
+        self::assertEquals('2015-01-05T00:00:00+01:00', $period->getStartDate()->format('c'));
+    }
+
+    public function testItIsNotInitializableWithInvalidPeriodIdentifier(): void
+    {
+        $this->expectException(InvalidPeriodIdentifier::class);
+        $this->expectExceptionMessage('foo#bar is not a valid week period identifier (e.g. week#2017-36).');
+
+        WeekPeriod::createFromPeriodIdentifier('foo#bar');
     }
 
     public function testItIsInitializableWithPeriod(): void
     {
         $period = WeekPeriod::createFromPeriodString('2015-02');
-        $this->assertEquals(new DateTimeImmutable('2015-01-05'), $period->getStartDate());
+
+        self::assertEquals('2015-01-05T00:00:00+01:00', $period->getStartDate()->format('c'));
     }
 
     public function testItIsNotInitializableWithInvalidPeriod(): void
     {
         $this->expectException(InvalidPeriodString::class);
+        $this->expectExceptionMessage('2015 is not a valid week period string (e.g. 2017-36).');
+
         WeekPeriod::createFromPeriodString('2015');
     }
 
     public function testItIsInitializableWithDate(): void
     {
         $period = WeekPeriod::createFromDateString('2015-01-08');
-        $this->assertEquals(new DateTimeImmutable('2015-01-05'), $period->getStartDate());
+
+        self::assertEquals('2015-01-05T00:00:00+01:00', $period->getStartDate()->format('c'));
     }
 
     public function testItIsNotInitializableWithInvalidDate(): void
     {
         $this->expectException(InvalidDateString::class);
-        WeekPeriod::createFromDateString('2015.01.08');
-    }
+        $this->expectExceptionMessage('2015.01.08 is not a valid day period string (e.g. 2017-12-24).');
 
-    public function testItIsInitializableWithCurrentPeriod(): void
-    {
-        $this->assertInstanceOf(WeekPeriod::class, WeekPeriod::createCurrent());
+        WeekPeriod::createFromDateString('2015.01.08');
     }
 
     public function testItHasAStartDate(): void
     {
         $period = WeekPeriod::createFromPeriodString('2015-02');
-        $this->assertEquals(new DateTimeImmutable('2015-01-05 00:00:00'), $period->getStartDate());
+
+        self::assertEquals('2015-01-05T00:00:00+01:00', $period->getStartDate()->format('c'));
     }
 
     public function testItHasAnEndDate(): void
     {
         $date = new DateTimeImmutable('2015-01-05');
         $period = new WeekPeriod($date);
-        $this->assertEquals($date->modify('+1 week midnight -1 second'), $period->getEndDate());
+
+        self::assertEquals('2015-01-11T23:59:59+01:00', $period->getEndDate()->format('c'));
+    }
+
+    public function testItHasAPeriodString(): void
+    {
+        $date = new DateTimeImmutable('2015-01-07');
+        $period = new WeekPeriod($date);
+
+        self::assertSame('2015-02', $period->getPeriodString());
     }
 
     public function testItHasAPeriodIdentifier(): void
     {
         $date = new DateTimeImmutable('2015-01-07');
         $period = new WeekPeriod($date);
-        $this->assertSame('2015-02', $period->getPeriod());
+
+        self::assertSame('week#2015-02', $period->getPeriodIdentifier());
     }
 
     public function testItContainsDate(): void
     {
-        $this->assertTrue(WeekPeriod::createCurrent()->contains(new DateTimeImmutable()));
-    }
+        $period = WeekPeriod::createFromPeriodString('2015-24');
 
-    public function testItDoesNotContainDate(): void
-    {
-        $this->assertFalse(WeekPeriod::createCurrent()->contains(new DateTimeImmutable('-2 weeks')));
-    }
-
-    public function testItCanBeTheCurrentDate(): void
-    {
-        $this->assertTrue(WeekPeriod::createCurrent()->isCurrent());
-    }
-
-    public function testItCanNotBeTheCurrentDate(): void
-    {
-        $date = new DateTimeImmutable('2015-01-1');
-        $period = new WeekPeriod($date);
-        $this->assertFalse($period->isCurrent());
-    }
-
-    public function testItHasNextPeriod(): void
-    {
-        $period = WeekPeriod::createFromPeriodString('2015-02');
-        $this->assertInstanceOf(WeekPeriod::class, $period->next());
-        $this->assertEquals(WeekPeriod::createFromPeriodString('2015-03'), $period->next());
-    }
-
-    public function testItHasPreviousPeriod(): void
-    {
-        $period = WeekPeriod::createFromPeriodString('2015-02');
-        $this->assertInstanceOf(WeekPeriod::class, $period->prev());
-        $this->assertEquals(WeekPeriod::createFromPeriodString('2015-01'), $period->prev());
-    }
-
-    public function testItHasNowPeriod(): void
-    {
-        $date = new DateTimeImmutable('2015-01-07');
-        $period = new WeekPeriod($date);
-        $this->assertInstanceOf(WeekPeriod::class, $period->now());
-        $this->assertEquals(WeekPeriod::createFromPeriodString(date('Y-W')), $period->now());
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-05-31')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-06-07')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-06-08')));
+        self::assertTrue($period->contains(new DateTimeImmutable('2015-06-14')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-06-15')));
+        self::assertFalse($period->contains(new DateTimeImmutable('2015-07-01')));
     }
 
     public function testItHasDatePeriod(): void
     {
         $date = new DateTimeImmutable('2015-01-07');
         $period = new WeekPeriod($date);
-        $this->assertInstanceOf(DatePeriod::class, $period->getDatePeriod(new DateInterval('P1D')));
+
+        self::assertInstanceOf(DatePeriod::class, $period->getDatePeriod(new DateInterval('P1D')));
         $i = 0;
         foreach ($period->getDatePeriod(new DateInterval('P1D')) as $x) {
             ++$i;
         }
 
-        $this->assertSame(7, $i);
+        self::assertSame(7, $i);
     }
 
     public function testItHasDateInterval(): void
     {
         $date = new DateTimeImmutable('2015-01-07');
         $period = new WeekPeriod($date);
-        $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals(
+
+        self::assertInstanceOf(DateInterval::class, $period->getDateInterval());
+        self::assertEquals(
             (new DateInterval('P1W'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
             $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
         );
-    }
-
-    public function testItHasPeriodDayTranslationKey(): void
-    {
-        $period = WeekPeriod::createFromDateString('2015-01-07');
-        $this->assertSame('period.week.period', $period->getTranslationKey());
-    }
-
-    public function testItHasThisDayTranslationKey(): void
-    {
-        $period = new WeekPeriod(new DateTimeImmutable());
-        $this->assertSame('period.week.this', $period->getTranslationKey());
-    }
-
-    public function testItHasNextDayTranslationKey(): void
-    {
-        $period = new WeekPeriod(new DateTimeImmutable('+1 week'));
-        $this->assertSame('period.week.next', $period->getTranslationKey());
-    }
-
-    public function testItHasPrevDayTranslationKey(): void
-    {
-        $period = new WeekPeriod(new DateTimeImmutable('-1 week'));
-        $this->assertSame('period.week.prev', $period->getTranslationKey());
     }
 }

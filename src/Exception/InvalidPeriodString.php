@@ -22,11 +22,11 @@ final class InvalidPeriodString extends InvalidArgumentException implements Peri
 
     public static function invalidMonthPeriod(string $period): self
     {
-        return new self(sprintf('%s  is not a valid month period string (e.g. 2017-12).', $period));
+        return new self(sprintf('%s is not a valid month period string (e.g. 2017-12).', $period));
     }
 
     public static function invalidYearPeriod(string $period): self
     {
-        return new self(sprintf('%s  is not a valid year period string (e.g. 2017).', $period));
+        return new self(sprintf('%s is not a valid year period string (e.g. 2017).', $period));
     }
 }

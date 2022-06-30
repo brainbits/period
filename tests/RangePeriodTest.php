@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Brainbits\PeriodTest;
 
+use Brainbits\Period\Exception\InvalidPeriodIdentifier;
 use Brainbits\Period\RangePeriod;
 use DateInterval;
 use DatePeriod;
@@ -26,79 +27,57 @@ final class RangePeriodTest extends TestCase
 
     public function testItIsInitializableWithDatetime(): void
     {
-        $this->assertEquals(new DateTimeImmutable('2015-06-02'), $this->period->getStartDate());
-        $this->assertEquals(new DateTimeImmutable('2015-06-18'), $this->period->getEndDate());
+        self::assertEquals('2015-06-02T00:00:00+02:00', $this->period->getStartDate()->format('c'));
+        self::assertEquals('2015-06-18T23:59:59+02:00', $this->period->getEndDate()->format('c'));
+    }
+
+    public function testItIsInitializableWithPeriodIdentifier(): void
+    {
+        $period = RangePeriod::createFromPeriodIdentifier('range#2015-02-03#2015-03-17');
+
+        self::assertEquals('2015-02-03T00:00:00+01:00', $period->getStartDate()->format('c'));
+        self::assertEquals('2015-03-17T23:59:59+01:00', $period->getEndDate()->format('c'));
+    }
+
+    public function testItIsNotInitializableWithInvalidPeriodIdentifier(): void
+    {
+        $this->expectException(InvalidPeriodIdentifier::class);
+        $this->expectExceptionMessage(
+            'foo#bar#baz is not a valid range period identifier (e.g. range#2017-12-24#2017-12-26).'
+        );
+
+        RangePeriod::createFromPeriodIdentifier('foo#bar#baz');
     }
 
     public function testItHasAStartDate(): void
     {
-        $this->assertEquals(new DateTimeImmutable('2015-06-02'), $this->period->getStartDate());
+        self::assertEquals('2015-06-02T00:00:00+02:00', $this->period->getStartDate()->format('c'));
     }
 
     public function testItHasAnEndDate(): void
     {
-        $this->assertEquals(new DateTimeImmutable('2015-06-18'), $this->period->getEndDate());
+        self::assertEquals('2015-06-18T23:59:59+02:00', $this->period->getEndDate()->format('c'));
+    }
+
+    public function testItHasAPeriodString(): void
+    {
+        self::assertSame('2015-06-02 - 2015-06-18', $this->period->getPeriodString());
     }
 
     public function testItHasAPeriodIdentifier(): void
     {
-        $this->assertSame('2015-06-02 - 2015-06-18', $this->period->getPeriod());
+        self::assertSame('range#2015-06-02#2015-06-18', $this->period->getPeriodIdentifier());
     }
 
     public function testItContainsDate(): void
     {
-        $this->assertTrue($this->period->contains(new DateTimeImmutable('2015-06-10')));
-    }
-
-    public function testItDoesNotContainDate(): void
-    {
-        $this->assertFalse($this->period->contains(new DateTimeImmutable('2016-05-20')));
-    }
-
-    public function testItCanBeTheCurrentDate(): void
-    {
-        $date1 = new DateTimeImmutable('-2 days');
-        $date2 = new DateTimeImmutable('+2 days');
-        $period = new RangePeriod($date1, $date2);
-        $this->assertTrue($period->isCurrent());
-    }
-
-    public function testItCanNotBeTheCurrentDate(): void
-    {
-        $this->assertFalse($this->period->isCurrent());
-    }
-
-    public function testItHasNextPeriod(): void
-    {
-        $date1 = new DateTimeImmutable('2015-01-01');
-        $date2 = new DateTimeImmutable('2015-01-11');
-        $period = new RangePeriod($date1, $date2);
-        $this->assertInstanceOf(RangePeriod::class, $period->next());
-        $date3 = new DateTimeImmutable('2015-01-11');
-        $date4 = new DateTimeImmutable('2015-01-21');
-        $this->assertEquals(new RangePeriod($date3, $date4), $period->next());
-    }
-
-    public function testItHasPreviousPeriod(): void
-    {
-        $date1 = new DateTimeImmutable('2015-01-21');
-        $date2 = new DateTimeImmutable('2015-01-31');
-        $period = new RangePeriod($date1, $date2);
-        $this->assertInstanceOf(RangePeriod::class, $period->prev());
-        $date3 = new DateTimeImmutable('2015-01-11');
-        $date4 = new DateTimeImmutable('2015-01-21');
-        $this->assertEquals(new RangePeriod($date3, $date4), $period->prev());
-    }
-
-    public function testItHasNowPeriod(): void
-    {
-        $date1 = new DateTimeImmutable('2015-01-21');
-        $date2 = new DateTimeImmutable('2015-01-31');
-        $period = new RangePeriod($date1, $date2);
-        $date3 = new DateTimeImmutable();
-        $date4 = $date3->modify('+10 days');
-        $this->assertInstanceOf(RangePeriod::class, $period->now());
-        $this->assertEquals((new RangePeriod($date3, $date4))->getPeriod(), $period->now()->getPeriod());
+        self::assertFalse($this->period->contains(new DateTimeImmutable('2016-05-15')));
+        self::assertFalse($this->period->contains(new DateTimeImmutable('2015-06-01')));
+        self::assertTrue($this->period->contains(new DateTimeImmutable('2015-06-02')));
+        self::assertTrue($this->period->contains(new DateTimeImmutable('2015-06-10')));
+        self::assertTrue($this->period->contains(new DateTimeImmutable('2015-06-18')));
+        self::assertFalse($this->period->contains(new DateTimeImmutable('2016-06-19')));
+        self::assertFalse($this->period->contains(new DateTimeImmutable('2016-07-15')));
     }
 
     public function testItHasDatePeriod(): void
@@ -106,13 +85,14 @@ final class RangePeriodTest extends TestCase
         $date1 = new DateTimeImmutable('2015-01-01');
         $date2 = new DateTimeImmutable('2015-01-11');
         $period = new RangePeriod($date1, $date2);
-        $this->assertInstanceOf(DatePeriod::class, $period->getDatePeriod(new DateInterval('P10D')));
+
+        self::assertInstanceOf(DatePeriod::class, $period->getDatePeriod(new DateInterval('P10D')));
         $i = 0;
         foreach ($period->getDatePeriod(new DateInterval('P1D')) as $x) {
             ++$i;
         }
 
-        $this->assertSame(10, $i);
+        self::assertSame(11, $i);
     }
 
     public function testItHasDateInterval(): void
@@ -120,18 +100,11 @@ final class RangePeriodTest extends TestCase
         $date1 = new DateTimeImmutable('2015-01-01');
         $date2 = new DateTimeImmutable('2015-01-11');
         $period = new RangePeriod($date1, $date2);
-        $this->assertInstanceOf(DateInterval::class, $period->getDateInterval());
-        $this->assertEquals(
-            (new DateInterval('P10D'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
+
+        self::assertInstanceOf(DateInterval::class, $period->getDateInterval());
+        self::assertEquals(
+            (new DateInterval('P11D'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
             $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
         );
-    }
-
-    public function testItHasPeriodRangeTranslationKey(): void
-    {
-        $date1 = new DateTimeImmutable('2015-01-01');
-        $date2 = new DateTimeImmutable('2015-01-11');
-        $period = new RangePeriod($date1, $date2);
-        $this->assertSame('period.range.period', $period->getTranslationKey());
     }
 }

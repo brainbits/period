@@ -9,7 +9,8 @@ use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-interface Period extends PeriodInterface
+/** @deprecated Use Period interface */
+interface PeriodInterface // phpcs:ignore
 {
     public function getStartDate(): DateTimeImmutable;
 
@@ -35,4 +36,22 @@ interface Period extends PeriodInterface
      * @return DatePeriod<DateTimeImmutable>
      */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod;
+
+    /** @deprecated use getPeriodString() */
+    public function getPeriod(): string;
+
+    /** @deprecated use PeriodFactory::isCurrent() */
+    public function isCurrent(): bool;
+
+    /** @deprecated use PeriodFactory::next() */
+    public function next(): Period;
+
+    /** @deprecated use PeriodFactory::previous() */
+    public function prev(): Period;
+
+    /** @deprecated use PeriodFactory::current*() */
+    public function now(): Period;
+
+    /** @deprecated use PeriodFactory::getTranslationKey() */
+    public function getTranslationKey(): string;
 }
