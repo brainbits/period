@@ -9,7 +9,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-interface Period extends PeriodInterface
+interface Period
 {
     public function getStartDate(): DateTimeImmutable;
 
