@@ -21,7 +21,7 @@
         "brainbits/phpcs-standard": "^5.0",
         "ergebnis/phpstan-rules": "^1.0",
         "jangregor/phpstan-prophecy": "^1.0",
-        "phpstan/phpstan": "^1.0.0",
+        "phpstan/phpstan": "^1.9.0",
         "phpunit/phpunit": "^9.3",
         "symfony/serializer": "^5.3",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
