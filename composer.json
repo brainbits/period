@@ -26,7 +26,8 @@
         "symfony/serializer": "^5.3",
         "thecodingmachine/phpstan-safe-rule": "^1.2",
         "thecodingmachine/phpstan-strict-rules": "^1.0",
-        "twig/twig": "^3.0"
+        "twig/twig": "^3.0",
+        "roave/backward-compatibility-check": "^8.2"
     },
     "suggest": {
         "symfony/serializer": "If you need to serialize periods"
