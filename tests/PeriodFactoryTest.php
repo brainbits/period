@@ -633,6 +633,42 @@ final class PeriodFactoryTest extends TestCase
         ];
     }
 
+    public function testFromIdentifier(): void
+    {
+        $this->assertEquals(
+            DayPeriod::createFromPeriodString('2022-02-02'),
+            $this->factory->fromIdentifier('day#2022-02-02'),
+        );
+        $this->assertEquals(
+            WeekPeriod::createFromPeriodString('2022-14'),
+            $this->factory->fromIdentifier('week#2022-14'),
+        );
+        $this->assertEquals(
+            MonthPeriod::createFromPeriodString('2022-05'),
+            $this->factory->fromIdentifier('month#2022-05'),
+        );
+        $this->assertEquals(
+            YearPeriod::createFromPeriodString('2021'),
+            $this->factory->fromIdentifier('year#2021'),
+        );
+        $this->assertEquals(
+            new RangePeriod(new DateTimeImmutable('2022-02-02'), new DateTimeImmutable('2023-03-03')),
+            $this->factory->fromIdentifier('range#2022-02-02#2023-03-03'),
+        );
+        $this->assertEquals(
+            RunningWeekPeriod::createFromPeriodString('2018-19', new DateTimeImmutable('2018-06-15')),
+            $this->factory->fromIdentifier('running-week#2018-19'),
+        );
+        $this->assertEquals(
+            RunningMonthPeriod::createFromPeriodString('2018-05', new DateTimeImmutable('2018-06-15')),
+            $this->factory->fromIdentifier('running-month#2018-05'),
+        );
+        $this->assertEquals(
+            RunningYearPeriod::createFromPeriodString('2018', new DateTimeImmutable('2018-06-15')),
+            $this->factory->fromIdentifier('running-year#2018'),
+        );
+    }
+
     /**
      * @dataProvider translationPeriods
      */
