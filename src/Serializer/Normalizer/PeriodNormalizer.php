@@ -27,6 +27,12 @@ final class PeriodNormalizer implements NormalizerInterface, DenormalizerInterfa
     {
     }
 
+    /** @return array<class-string|'*'|'object'|string, bool|null> */
+    public function getSupportedTypes(string|null $format): array
+    {
+        return [Period::class => true];
+    }
+
     /**
      * @param mixed   $object
      * @param string  $format

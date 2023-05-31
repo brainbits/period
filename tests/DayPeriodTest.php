@@ -13,9 +13,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Brainbits\Period\DayPeriod
- */
+/** @covers \Brainbits\Period\DayPeriod */
 final class DayPeriodTest extends TestCase
 {
     public function testItIsInitializable(): void
@@ -132,7 +130,7 @@ final class DayPeriodTest extends TestCase
         self::assertInstanceOf(DateInterval::class, $period->getDateInterval());
         self::assertEquals(
             (new DateInterval('P1D'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
-            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
+            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'),
         );
     }
 }

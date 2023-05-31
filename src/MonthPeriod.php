@@ -55,7 +55,7 @@ final class MonthPeriod implements Period
     {
         try {
             $period = new self(new DateTimeImmutable($date));
-        } catch (Throwable $e) {
+        } catch (Throwable) {
             throw InvalidDateString::invalidDate($date);
         }
 

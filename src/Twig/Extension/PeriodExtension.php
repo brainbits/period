@@ -22,9 +22,7 @@ final class PeriodExtension extends AbstractExtension
     {
     }
 
-    /**
-     * @return TwigFunction[]
-     */
+    /** @return TwigFunction[] */
     public function getFunctions(): array
     {
         return [

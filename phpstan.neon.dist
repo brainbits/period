@@ -5,12 +5,17 @@ parameters:
         - tests
     ignoreErrors:
         - '#Class DateTimeImmutable is unsafe to use#'
-        - '#Method .* has parameter .* with null as default value#'
-        - '#Thrown exceptions in a catch block must bundle the previous exception#'
     ergebnis:
-        classesAllowedToBeExtended:
-            - InvalidArgumentException
-            - Twig\Extension\AbstractExtension
+        noNullableReturnTypeDeclaration:
+            enabled: false
+        noParameterWithNullableTypeDeclaration:
+              enabled: false
+        noParameterWithNullDefaultValue:
+            enabled: false
+        noExtends:
+            classesAllowedToBeExtended:
+                - InvalidArgumentException
+                - Twig\Extension\AbstractExtension
 
 includes:
     - vendor/ergebnis/phpstan-rules/rules.neon

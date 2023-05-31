@@ -11,9 +11,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Brainbits\Period\RangePeriod
- */
+/** @covers \Brainbits\Period\RangePeriod */
 final class RangePeriodTest extends TestCase
 {
     private RangePeriod $period;
@@ -43,7 +41,7 @@ final class RangePeriodTest extends TestCase
     {
         $this->expectException(InvalidPeriodIdentifier::class);
         $this->expectExceptionMessage(
-            'foo#bar#baz is not a valid range period identifier (e.g. range#2017-12-24#2017-12-26).'
+            'foo#bar#baz is not a valid range period identifier (e.g. range#2017-12-24#2017-12-26).',
         );
 
         RangePeriod::createFromPeriodIdentifier('foo#bar#baz');
@@ -104,7 +102,7 @@ final class RangePeriodTest extends TestCase
         self::assertInstanceOf(DateInterval::class, $period->getDateInterval());
         self::assertEquals(
             (new DateInterval('P11D'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
-            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
+            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'),
         );
     }
 }

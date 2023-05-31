@@ -18,9 +18,7 @@ use DateTimeImmutable;
 use Lcobucci\Clock\FrozenClock;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Brainbits\Period\Twig\Extension\PeriodExtension
- */
+/** @covers \Brainbits\Period\Twig\Extension\PeriodExtension */
 final class PeriodExtensionTest extends TestCase
 {
     private FrozenClock $clock;

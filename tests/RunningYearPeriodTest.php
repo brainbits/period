@@ -12,9 +12,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Brainbits\Period\RunningYearPeriod
- */
+/** @covers \Brainbits\Period\RunningYearPeriod */
 final class RunningYearPeriodTest extends TestCase
 {
     public function testItIsInitializable(): void
@@ -160,7 +158,7 @@ final class RunningYearPeriodTest extends TestCase
         self::assertInstanceOf(DateInterval::class, $period->getDateInterval());
         self::assertEquals(
             (new DateInterval('P1Y'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
-            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
+            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'),
         );
     }
 }

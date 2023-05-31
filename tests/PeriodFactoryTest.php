@@ -18,9 +18,7 @@ use DateTimeImmutable;
 use Lcobucci\Clock\FrozenClock;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Brainbits\Period\PeriodFactory
- */
+/** @covers \Brainbits\Period\PeriodFactory */
 final class PeriodFactoryTest extends TestCase
 {
     private PeriodFactory $factory;
@@ -93,10 +91,8 @@ final class PeriodFactoryTest extends TestCase
         self::assertEquals(new DateTimeImmutable('2018-06-15 23:59:59'), $runningYear->getEndDate());
     }
 
-    /**
-     * @return array<string, array{Period, bool}>
-     */
-    public function isCurrentPeriods(): array
+    /** @return array<string, array{Period, bool}> */
+    public static function isCurrentPeriods(): array
     {
         return [
             'dayBefore' => [DayPeriod::createFromPeriodString('2018-06-10'), false],
@@ -243,18 +239,14 @@ final class PeriodFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider isCurrentPeriods
-     */
+    /** @dataProvider isCurrentPeriods */
     public function testIsCurrent(Period $period, bool $expected): void
     {
         self::assertSame($expected, $this->factory->isCurrent($period));
     }
 
-    /**
-     * @return array<string, array{Period, string, string}>
-     */
-    public function nextPeriods(): array
+    /** @return array<string, array{Period, string, string}> */
+    public static function nextPeriods(): array
     {
         $now1 = new DateTimeImmutable('2018-06-16 15:00:00'); // saturday
         $now2 = new DateTimeImmutable('2019-07-16 15:00:00');
@@ -318,19 +310,15 @@ final class PeriodFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider nextPeriods
-     */
+    /** @dataProvider nextPeriods */
     public function testNext(Period $period, string $expectedStart, string $expectedEnd): void
     {
         self::assertSame($expectedStart, $this->factory->next($period)->getStartDate()->format('c'));
         self::assertSame($expectedEnd, $this->factory->next($period)->getEndDate()->format('c'));
     }
 
-    /**
-     * @return array<string, array{Period, string, string}>
-     */
-    public function previousPeriods(): array
+    /** @return array<string, array{Period, string, string}> */
+    public static function previousPeriods(): array
     {
         $now1 = new DateTimeImmutable('2018-06-16 15:00:00'); // saturday
         $now2 = new DateTimeImmutable('2019-07-16 15:00:00');
@@ -394,19 +382,15 @@ final class PeriodFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider previousPeriods
-     */
+    /** @dataProvider previousPeriods */
     public function testPrevious(Period $period, string $expectedStart, string $expectedEnd): void
     {
         self::assertSame($expectedStart, $this->factory->previous($period)->getStartDate()->format('c'));
         self::assertSame($expectedEnd, $this->factory->previous($period)->getEndDate()->format('c'));
     }
 
-    /**
-     * @return array<string, array{Period, string, string}>
-     */
-    public function currentPeriods(): array
+    /** @return array<string, array{Period, string, string}> */
+    public static function currentPeriods(): array
     {
         $now1 = new DateTimeImmutable('2017-06-16 15:00:00'); // saturday
         $now2 = new DateTimeImmutable('2018-07-16 15:00:00');
@@ -470,19 +454,15 @@ final class PeriodFactoryTest extends TestCase
         ];
     }
 
-    /**
-     * @dataProvider currentPeriods
-     */
+    /** @dataProvider currentPeriods */
     public function testCurrent(Period $period, string $expectedStart, string $expectedEnd): void
     {
         self::assertSame($expectedStart, $this->factory->current($period)->getStartDate()->format('c'));
         self::assertSame($expectedEnd, $this->factory->current($period)->getEndDate()->format('c'));
     }
 
-    /**
-     * @return array<string, array{Period, string}>
-     */
-    public function translationPeriods(): array
+    /** @return array<string, array{Period, string}> */
+    public static function translationPeriods(): array
     {
         return [
             'dayBefore' => [DayPeriod::createFromPeriodString('2018-06-13'), 'period.day.period'],
@@ -669,9 +649,7 @@ final class PeriodFactoryTest extends TestCase
         );
     }
 
-    /**
-     * @dataProvider translationPeriods
-     */
+    /** @dataProvider translationPeriods */
     public function testTranslationPeriods(Period $period, string $expected): void
     {
         self::assertSame($expected, $this->factory->getTranslationKey($period));

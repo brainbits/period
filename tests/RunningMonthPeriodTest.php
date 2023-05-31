@@ -12,9 +12,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use PHPUnit\Framework\TestCase;
 
-/**
- * @covers \Brainbits\Period\RunningMonthPeriod
- */
+/** @covers \Brainbits\Period\RunningMonthPeriod */
 final class RunningMonthPeriodTest extends TestCase
 {
     public function testItIsInitializable(): void
@@ -38,7 +36,7 @@ final class RunningMonthPeriodTest extends TestCase
     {
         $this->expectException(InvalidPeriodIdentifier::class);
         $this->expectExceptionMessage(
-            'foo#bar is not a valid running month period identifier (e.g. running-month#2017-12).'
+            'foo#bar is not a valid running month period identifier (e.g. running-month#2017-12).',
         );
 
         RunningMonthPeriod::createFromPeriodIdentifier('foo#bar', new DateTimeImmutable('2015-06-18'));
@@ -152,7 +150,7 @@ final class RunningMonthPeriodTest extends TestCase
         self::assertInstanceOf(DateInterval::class, $period->getDateInterval());
         self::assertEquals(
             (new DateInterval('P1M'))->format('y%y_m%m_d%d_h%h_i%i_s%s'),
-            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s')
+            $period->getDateInterval()->format('y%y_m%m_d%d_h%h_i%i_s%s'),
         );
     }
 }
