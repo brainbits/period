@@ -5,7 +5,7 @@
         "@semantic-release/github"
     ],
     "branches": [
-        "main"
+        "master"
     ],
     tagFormat: '${version}',
 }
