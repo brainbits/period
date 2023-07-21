@@ -14,13 +14,13 @@
         "php": "^8.2",
         "ext-date": "*",
         "thecodingmachine/safe": "^2.1",
-        "lcobucci/clock": "^3.0",
         "psr/clock": "^1.0"
     },
     "require-dev": {
         "brainbits/phpcs-standard": "^7.0",
         "ergebnis/phpstan-rules": "^2.0",
         "jangregor/phpstan-prophecy": "^1.0",
+        "lcobucci/clock": "^3.0",
         "phpstan/phpstan": "^1.9.0",
         "phpunit/phpunit": "^10.1",
         "symfony/serializer": "^6.0",
