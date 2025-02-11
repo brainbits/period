@@ -10,7 +10,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-use function Safe\preg_match;
+use function preg_match;
 use function sprintf;
 
 final class RangePeriod implements Period
@@ -80,7 +80,7 @@ final class RangePeriod implements Period
         return $this->startDate->diff($this->endDate->modify('+1 second'));
     }
 
-    /** @return DatePeriod<DateTimeImmutable> */
+    /** @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null> */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
     {
         return new DatePeriod($this->startDate, $interval, $this->endDate, $options);

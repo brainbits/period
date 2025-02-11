@@ -16,9 +16,11 @@ use Brainbits\Period\WeekPeriod;
 use Brainbits\Period\YearPeriod;
 use DateTimeImmutable;
 use Lcobucci\Clock\FrozenClock;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Twig\TwigFunction;
 
-/** @covers \Brainbits\Period\Twig\Extension\PeriodExtension */
+#[CoversClass(PeriodExtension::class)]
 final class PeriodExtensionTest extends TestCase
 {
     private FrozenClock $clock;
@@ -34,7 +36,7 @@ final class PeriodExtensionTest extends TestCase
 
     public function testGetFunctions(): void
     {
-        $this->assertIsArray($this->extension->getFunctions());
+        $this->assertContainsOnlyInstancesOf(TwigFunction::class, $this->extension->getFunctions());
     }
 
     public function testCurrent(): void

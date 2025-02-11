@@ -17,12 +17,13 @@ use Brainbits\Period\WeekPeriod;
 use Brainbits\Period\YearPeriod;
 use DateTimeImmutable;
 use Lcobucci\Clock\FrozenClock;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Symfony\Component\Serializer\Exception\InvalidArgumentException;
 use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 
-/** @covers \Brainbits\Period\Serializer\Normalizer\PeriodNormalizer */
+#[CoversClass(PeriodNormalizer::class)]
 final class PeriodNormalizerTest extends TestCase
 {
     private FrozenClock $clock;

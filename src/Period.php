@@ -32,7 +32,7 @@ interface Period
      * $options can be set to DatePeriod::EXCLUDE_START_DATE to exclude
      * the start date from the set of recurring dates within the period.
      *
-     * @return DatePeriod<DateTimeImmutable>
+     * @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null>
      */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod;
 }

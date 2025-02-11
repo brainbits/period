@@ -11,7 +11,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-use function Safe\preg_match;
+use function preg_match;
 use function sprintf;
 use function str_starts_with;
 use function substr;
@@ -90,7 +90,7 @@ final class RunningWeekPeriod implements Period
         return new DateInterval('P1W');
     }
 
-    /** @return DatePeriod<DateTimeImmutable> */
+    /** @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null> */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
     {
         return new DatePeriod($this->startDate, $interval, $this->endDate, $options);

@@ -11,9 +11,10 @@ use Brainbits\Period\Exception\InvalidPeriodString;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/** @covers \Brainbits\Period\DayPeriod */
+#[CoversClass(DayPeriod::class)]
 final class DayPeriodTest extends TestCase
 {
     public function testItIsInitializable(): void

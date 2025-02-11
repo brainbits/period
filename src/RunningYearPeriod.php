@@ -11,7 +11,7 @@ use DatePeriod;
 use DateTimeImmutable;
 use DateTimeInterface;
 
-use function Safe\preg_match;
+use function preg_match;
 use function sprintf;
 use function str_starts_with;
 use function substr;
@@ -35,7 +35,7 @@ final class RunningYearPeriod implements Period
 
     public static function createFromPeriodString(string $period, DateTimeImmutable $now): self
     {
-        if (!preg_match('/^\d\d{2,4}$/', $period, $match)) {
+        if (!preg_match('/^\d\d{2,4}$/', $period)) {
             throw InvalidPeriodString::invalidYearPeriod($period);
         }
 
@@ -86,7 +86,7 @@ final class RunningYearPeriod implements Period
         return new DateInterval('P1Y');
     }
 
-    /** @return DatePeriod<DateTimeImmutable> */
+    /** @return DatePeriod<DateTimeImmutable, DateTimeImmutable, null> */
     public function getDatePeriod(DateInterval $interval, int $options = 0): DatePeriod
     {
         return new DatePeriod($this->startDate, $interval, $this->endDate, $options);

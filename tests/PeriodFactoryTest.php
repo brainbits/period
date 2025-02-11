@@ -16,9 +16,11 @@ use Brainbits\Period\WeekPeriod;
 use Brainbits\Period\YearPeriod;
 use DateTimeImmutable;
 use Lcobucci\Clock\FrozenClock;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 
-/** @covers \Brainbits\Period\PeriodFactory */
+#[CoversClass(PeriodFactory::class)]
 final class PeriodFactoryTest extends TestCase
 {
     private PeriodFactory $factory;
@@ -239,7 +241,7 @@ final class PeriodFactoryTest extends TestCase
         ];
     }
 
-    /** @dataProvider isCurrentPeriods */
+    #[DataProvider('isCurrentPeriods')]
     public function testIsCurrent(Period $period, bool $expected): void
     {
         self::assertSame($expected, $this->factory->isCurrent($period));
@@ -310,7 +312,7 @@ final class PeriodFactoryTest extends TestCase
         ];
     }
 
-    /** @dataProvider nextPeriods */
+    #[DataProvider('nextPeriods')]
     public function testNext(Period $period, string $expectedStart, string $expectedEnd): void
     {
         self::assertSame($expectedStart, $this->factory->next($period)->getStartDate()->format('c'));
@@ -382,7 +384,7 @@ final class PeriodFactoryTest extends TestCase
         ];
     }
 
-    /** @dataProvider previousPeriods */
+    #[DataProvider('previousPeriods')]
     public function testPrevious(Period $period, string $expectedStart, string $expectedEnd): void
     {
         self::assertSame($expectedStart, $this->factory->previous($period)->getStartDate()->format('c'));
@@ -454,7 +456,7 @@ final class PeriodFactoryTest extends TestCase
         ];
     }
 
-    /** @dataProvider currentPeriods */
+    #[DataProvider('currentPeriods')]
     public function testCurrent(Period $period, string $expectedStart, string $expectedEnd): void
     {
         self::assertSame($expectedStart, $this->factory->current($period)->getStartDate()->format('c'));
@@ -649,7 +651,7 @@ final class PeriodFactoryTest extends TestCase
         );
     }
 
-    /** @dataProvider translationPeriods */
+    #[DataProvider('translationPeriods')]
     public function testTranslationPeriods(Period $period, string $expected): void
     {
         self::assertSame($expected, $this->factory->getTranslationKey($period));

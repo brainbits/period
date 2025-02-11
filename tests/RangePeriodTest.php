@@ -9,9 +9,10 @@ use Brainbits\Period\RangePeriod;
 use DateInterval;
 use DatePeriod;
 use DateTimeImmutable;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
-/** @covers \Brainbits\Period\RangePeriod */
+#[CoversClass(RangePeriod::class)]
 final class RangePeriodTest extends TestCase
 {
     private RangePeriod $period;
