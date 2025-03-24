@@ -16,7 +16,7 @@
         "psr/clock": "^1.0"
     },
     "require-dev": {
-        "brainbits/phpcs-standard": "^7.0",
+        "brainbits/phpcs-standard": "^8.0",
         "ergebnis/phpstan-rules": "^2.0",
         "lcobucci/clock": "^3.0",
         "phpstan/phpstan": "^2.0",
