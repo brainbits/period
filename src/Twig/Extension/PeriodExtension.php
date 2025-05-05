@@ -26,6 +26,8 @@ final class PeriodExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
+            new TwigFunction('parse_period_identifier', [$this, 'parsePeriodIdentifier'], ['is_safe' => ['html']]),
+            new TwigFunction('month_period', [$this, 'monthPeriod'], ['is_safe' => ['html']]),
             new TwigFunction('current_day_period', [$this, 'currentDayPeriod'], ['is_safe' => ['html']]),
             new TwigFunction('current_week_period', [$this, 'currentWeekPeriod'], ['is_safe' => ['html']]),
             new TwigFunction('current_month_period', [$this, 'currentMonthPeriod'], ['is_safe' => ['html']]),
@@ -50,6 +52,16 @@ final class PeriodExtension extends AbstractExtension
             new TwigFunction('previous_period', [$this, 'previousPeriod'], ['is_safe' => ['html']]),
             new TwigFunction('period_translation_key', [$this, 'periodTranslationKey'], ['is_safe' => ['html']]),
         ];
+    }
+
+    public function parsePeriodIdentifier(string $periodIdentifier): Period
+    {
+        return $this->periodFactory->fromIdentifier($periodIdentifier);
+    }
+
+    public function monthPeriod($periodString): MonthPeriod|null
+    {
+        return $periodString ? MonthPeriod::createFromPeriodString($periodString) : null;
     }
 
     public function currentDayPeriod(): DayPeriod

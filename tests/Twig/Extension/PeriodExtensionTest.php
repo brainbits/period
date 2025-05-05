@@ -39,6 +39,22 @@ final class PeriodExtensionTest extends TestCase
         $this->assertContainsOnlyInstancesOf(TwigFunction::class, $this->extension->getFunctions());
     }
 
+    public function testParsePeriodIdentifier(): void
+    {
+        $this->assertEquals($this->periodFactory->currentDay(), $this->extension->parsePeriodIdentifier('day#2018-06-15'));
+        $this->assertEquals($this->periodFactory->currentWeek(), $this->extension->parsePeriodIdentifier('week#2018-24'));
+        $this->assertEquals($this->periodFactory->currentMonth(), $this->extension->parsePeriodIdentifier('month#2018-06'));
+        $this->assertEquals($this->periodFactory->currentYear(), $this->extension->parsePeriodIdentifier('year#2018'));
+        $this->assertEquals($this->periodFactory->currentRunningWeek(), $this->extension->parsePeriodIdentifier('running-week#2018-24'));
+        $this->assertEquals($this->periodFactory->currentRunningMonth(), $this->extension->parsePeriodIdentifier('running-month#2018-06'));
+        $this->assertEquals($this->periodFactory->currentRunningYear(), $this->extension->parsePeriodIdentifier('running-year#2018'));
+    }
+
+    public function testMonthPeriod(): void
+    {
+        $this->assertEquals($this->periodFactory->currentMonth(), $this->extension->monthPeriod('2018-06'));
+    }
+
     public function testCurrent(): void
     {
         $this->assertEquals($this->periodFactory->currentDay(), $this->extension->currentDayPeriod());
