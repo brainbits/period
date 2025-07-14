@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Brainbits\PeriodTest;
 
 use Brainbits\Period\DayPeriod;
+use Brainbits\Period\Exception\MismatchingPeriods;
 use Brainbits\Period\MonthPeriod;
 use Brainbits\Period\Period;
 use Brainbits\Period\PeriodFactory;
@@ -19,6 +20,8 @@ use Lcobucci\Clock\FrozenClock;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+
+use function iterator_to_array;
 
 #[CoversClass(PeriodFactory::class)]
 final class PeriodFactoryTest extends TestCase
@@ -655,5 +658,35 @@ final class PeriodFactoryTest extends TestCase
     public function testTranslationPeriods(Period $period, string $expected): void
     {
         self::assertSame($expected, $this->factory->getTranslationKey($period));
+    }
+
+    public function testFromToThrowMismatchingException(): void
+    {
+        $this->expectException(MismatchingPeriods::class);
+        // phpcs:ignore Generic.Files.LineLength.TooLong
+        $this->expectExceptionMessage('Both periods must have the same class, Brainbits\Period\MonthPeriod and Brainbits\Period\WeekPeriod given.');
+
+        $fromTo = $this->factory->fromTo(
+            new MonthPeriod(new DateTimeImmutable('2024-03')),
+            new WeekPeriod(new DateTimeImmutable('2024-07')),
+        );
+
+        iterator_to_array($fromTo);
+    }
+
+    public function testFromTo(): void
+    {
+        $fromTo = $this->factory->fromTo(
+            new MonthPeriod(new DateTimeImmutable('2024-03')),
+            new MonthPeriod(new DateTimeImmutable('2024-07')),
+        );
+
+        $result = iterator_to_array($fromTo);
+        self::assertCount(4, $result);
+        self::assertContainsOnlyInstancesOf(MonthPeriod::class, $result);
+        self::assertSame('2024-03', $result[0]->getPeriodString());
+        self::assertSame('2024-04', $result[1]->getPeriodString());
+        self::assertSame('2024-05', $result[2]->getPeriodString());
+        self::assertSame('2024-06', $result[3]->getPeriodString());
     }
 }

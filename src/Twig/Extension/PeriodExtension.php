@@ -59,7 +59,7 @@ final class PeriodExtension extends AbstractExtension
         return $this->periodFactory->fromIdentifier($periodIdentifier);
     }
 
-    public function monthPeriod($periodString): MonthPeriod|null
+    public function monthPeriod(string $periodString): MonthPeriod|null
     {
         return $periodString ? MonthPeriod::createFromPeriodString($periodString) : null;
     }
