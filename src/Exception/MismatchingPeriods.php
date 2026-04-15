@@ -19,4 +19,9 @@ final class MismatchingPeriods extends InvalidArgumentException implements Perio
             $otherPeriod::class,
         ));
     }
+
+    public static function empty(): self
+    {
+        return new self('Empty periods are not allowed.');
+    }
 }

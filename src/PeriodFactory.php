@@ -7,7 +7,6 @@ namespace Brainbits\Period;
 use Brainbits\Period\Exception\InvalidPeriodIdentifier;
 use Brainbits\Period\Exception\MismatchingPeriods;
 use DateTimeImmutable;
-use Generator;
 use Psr\Clock\ClockInterface;
 
 use function sprintf;
@@ -213,24 +212,21 @@ final class PeriodFactory
         };
     }
 
-    /**
-     * @param T $period
-     * @param T $toPeriod
-     *
-     * @return Generator<T>
-     *
-     * @template T of Period
-     */
-    public function fromTo(Period $period, Period $toPeriod): Generator
+    public function fromTo(Period $fromPeriod, Period $toPeriod): PeriodRange
     {
-        if ($period::class !== $toPeriod::class) {
-            throw MismatchingPeriods::differ($period, $toPeriod);
+        if ($fromPeriod::class !== $toPeriod::class) {
+            throw MismatchingPeriods::differ($fromPeriod, $toPeriod);
         }
 
+        $period = $fromPeriod;
+        $periods = [];
+
         do {
-            yield $period;
+            $periods[] = $period;
 
             $period = $this->next($period);
         } while ($period->getPeriodString() < $toPeriod->getPeriodString());
+
+        return new PeriodRange(...$periods);
     }
 }

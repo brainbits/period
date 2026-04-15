@@ -5,6 +5,8 @@ parameters:
         - src
         - tests
     ergebnis:
+        noPhpstanIgnore:
+            enabled: false
         noNullableReturnTypeDeclaration:
             enabled: false
         noParameterWithNullableTypeDeclaration:
