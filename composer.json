@@ -22,7 +22,7 @@
         "phpstan/phpstan": "^2.0",
         "phpunit/phpunit": "^13.0",
         "symfony/serializer": "^6.0|^7.0|^8.0",
-        "twig/twig": "^3.0",
+        "twig/twig": "^3.24",
         "roave/backward-compatibility-check": "^8.2"
     },
     "suggest": {
