@@ -23,7 +23,7 @@
         "phpunit/phpunit": "^13.0",
         "symfony/serializer": "^6.0|^7.0|^8.0",
         "twig/twig": "^3.0",
-        "roave/backward-compatibility-check": "^8.2"
+        "roave/backward-compatibility-check": "^8.20"
     },
     "suggest": {
         "symfony/serializer": "If you need to serialize periods"
